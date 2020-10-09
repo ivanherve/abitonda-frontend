@@ -1,0 +1,124 @@
+import React, { useEffect, useState } from 'react';
+import { Button, Col, Form, Modal, Row } from 'react-bootstrap';
+import swal from 'sweetalert';
+import { apiUrl, getRequest, Idx, postAuthRequest } from '../links/links';
+
+export function EditClass(props) {
+    const [teachers, setteachers] = useState([]);
+    const [classname, setclassname] = useState('');
+    const [theTeacher, settheTeacher] = useState('');
+    const [disabled, setdisabled] = useState(false);
+    const classe = props.classe;
+    console.log(classe);
+
+    const getTeachers = () => {
+        fetch(`${apiUrl}getteachers`, getRequest(JSON.parse(sessionStorage.getItem('userData')).token.api_token))
+            .then(r => r.json())
+            .then(r => {
+                if (r.status) {
+                    setteachers(r.response);
+                }
+                console.log(r)
+            })
+    }
+
+    const findTeacher = (e) => {
+        let nameArray = e.split(' ');
+        let surnameArray = [];
+        nameArray.map(n => {
+            if (n !== nameArray[0]) {
+                surnameArray.push(n);
+            }
+
+        })
+        let theSurname = surnameArray.join(" ");
+        //console.log(surnameArray);
+        /**/
+        teachers.map(t => {
+            if (t.Firstname === nameArray[0]) {
+                if (t.Surname === theSurname) settheTeacher(t.Professor_Id);
+            }
+        })
+    }
+
+    const editClass = () => {
+        let data = new FormData();
+        data.append('class', classe.Class);
+        data.append('teacherId', theTeacher);
+        data.append('active', disabled);
+        fetch(`${apiUrl}editclass`, postAuthRequest(JSON.parse(sessionStorage.getItem('userData')).token.api_token, data))
+            .then(r => r.json())
+            .then(r => {
+                if(r.status) swal('Parfait!', r.response, 'success').then(() => window.location.reload());
+                else swal('Erreur!', r.response, 'warning')
+            })
+    }
+
+    useEffect(() => {
+        if (teachers.length < 1) getTeachers();
+        if (classname !== classe.Class) {
+            setclassname(classe.Class);
+            setdisabled(classe.Disabled);
+        }
+        if (theTeacher.length < 1) findTeacher(classe.Teacher);
+        //console.log(classe.Class, classname)
+    }, [teachers, classname]);
+
+    return (
+        <Modal
+            show={props.show}
+            onHide={props.hide}
+            centered
+            size="xl"
+        >
+            <Modal.Header>
+                <Modal.Title>Modifier la classe de {classe.Class}</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+                <Form>
+                    <Form.Group as={Row} controlId="formClass">
+                        <Form.Label column sm="2">
+                            Classe
+                        </Form.Label>
+                        <Col sm="10">
+                            <Form.Control disabled placeholder={classe.Class} onChange={() => setclassname(classe.Class)} />
+                        </Col>
+                    </Form.Group>
+
+                    <Form.Group as={Row} controlId="formTeacher">
+                        <Form.Label column sm="2">
+                            Professeur
+                        </Form.Label>
+                        <Col sm="10">
+                            <Form.Control as="select" defaultValue={classe.Teacher} onChange={e => findTeacher(e.target.value)}>
+                                {
+                                    teachers.map(t =>
+                                        <option
+                                            key={Idx(teachers, t)}
+                                        >
+                                            {t.Firstname} {t.Surname}
+                                        </option>
+                                    )
+                                }
+                            </Form.Control>
+                        </Col>
+                    </Form.Group>
+
+                    <Form.Group as={Row} controlId="formPlaintextPassword">
+                        <Form.Label column sm="2">
+                            Désactivé ?
+                        </Form.Label>
+                        <Col sm="10">
+                            <Form.Check type="checkbox" checked={disabled} onChange={() => setdisabled(!disabled)} />
+                        </Col>
+                    </Form.Group>
+                </Form>
+            </Modal.Body>
+            <Modal.Footer>
+                <Button variant="outline-warning" onClick={() => editClass()}>
+                    Modifier
+                </Button>
+            </Modal.Footer>
+        </Modal>
+    )
+}
