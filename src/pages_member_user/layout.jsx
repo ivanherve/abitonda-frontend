@@ -20,7 +20,12 @@ export default function Layout() {
         setvariantColor(colors[i + 1]);
         console.log(colors[i++])
     }
+
     if (!sessionStorage.getItem('userData')) {
+        return <Redirect to='/login' />
+    }
+
+    if (JSON.parse(sessionStorage.getItem('userData')).user.Profil_Id < 2) {
         return <Redirect to='/login' />
     }
 
@@ -28,9 +33,9 @@ export default function Layout() {
         <div>
             {/*<SideBar location={location} history={history} />*/}
             <Header />
-            <div style={{ padding: '80px 20px 0px', height: '100vh' }}>
+            <div style={{ padding: '80px 0px 20px 0px', height: '100vh' }}>
                 <Container>
-                    <Switch style={{ height: '100%' }}>
+                    <Switch style={{ height: '100%', paddingBottom: '200px', marginBottom: '200px' }}>
                         {
                             (JSON.parse(sessionStorage.getItem('userData')).user.Professor_Id !== null || JSON.parse(sessionStorage.getItem('userData')).user.Profil_Id > 2)
                             &&
@@ -64,9 +69,11 @@ export default function Layout() {
                             <Route path='/students' component={Students} />
                         }
                         {
+                            /*
                             JSON.parse(sessionStorage.getItem('userData')).user.Profil_Id > 2
                             &&
                             <Route path='/statistics' component={Statistic} />
+                            */
                         }
                         {
                             window.location.pathname === "/"
@@ -81,7 +88,7 @@ export default function Layout() {
                         }
                     </Switch>
                 </Container>
-                <Navbar fixed="bottom" variant="primary" bg={variantColor} onClick={() => changeColor()}>
+                <Navbar fixed="bottom" variant="primary" bg={variantColor} style={{ marginTop: '20px' }} onClick={() => changeColor()}>
                     <Navbar.Text>
                         {JSON.parse(sessionStorage.getItem('userData')).user.Firstname} {JSON.parse(sessionStorage.getItem('userData')).user.Surname}
                     </Navbar.Text>
