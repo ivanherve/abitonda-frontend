@@ -2,6 +2,7 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 import { faEdit } from '@fortawesome/free-regular-svg-icons';
 import { faArrowUp, faPlus, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import StickyBox from "react-sticky-box";
 import React, { useEffect, useState } from 'react';
 import { Badge, Button, Card, Col, Form, ListGroup, Modal, Nav, OverlayTrigger, Row, Tab, Tooltip } from 'react-bootstrap';
 import swal from 'sweetalert';
@@ -272,180 +273,190 @@ export function Parents() {
                     </ListGroup>
                 </Col>
                 <Col xs='10'>
-                    <Card
-                        style={{ width: '100%', height: '75vh', overflowY: 'auto' }}
-                    >
-                        <Card.Header>
-                            <Row>
-                                <Col xs="11">
-                                    <Card.Title>{name}</Card.Title>
-                                    <Card.Text>
-                                        <i>{email}</i>
-                                        <br />
-                                        <i>{profil}</i>
-                                    </Card.Text>
-                                </Col>
-                                <Col>
-                                    {
-                                        JSON.parse(sessionStorage.getItem('userData')).user.Profil_Id > 2
-                                        &&
-                                        (
-                                            oneParent.Profil_Id > 1
-                                                ?
-                                                <OverlayTrigger
-                                                    placement="auto"
-                                                    delay={{ show: 250, hide: 400 }}
-                                                    overlay={<Tooltip>Bannir</Tooltip>}
-                                                >
-                                                    <Button
-                                                        style={{ width: '100%', marginBottom: '10px' }}
-                                                        variant="outline-danger"
-                                                        onClick={() => banParent()}
+                    <StickyBox offsetTop={80} offsetBottom={10}>
+                        <Card
+                            style={{ width: '100%', height: '75vh', overflowY: 'auto' }}
+                        >
+                            <Card.Header>
+                                <Row>
+                                    <Col xs="11">
+                                        <Card.Title>{name}</Card.Title>
+                                        <Card.Text>
+                                            <i>{email}</i>
+                                            <br />
+                                            <i>{profil}</i>
+                                        </Card.Text>
+                                    </Col>
+                                    <Col>
+                                        {
+                                            JSON.parse(sessionStorage.getItem('userData')).user.Profil_Id > 2
+                                            &&
+                                            (
+                                                oneParent.Profil_Id > 1
+                                                    ?
+                                                    <OverlayTrigger
+                                                        placement="auto"
+                                                        delay={{ show: 250, hide: 400 }}
+                                                        overlay={<Tooltip>Bannir</Tooltip>}
                                                     >
-                                                        <FontAwesomeIcon icon={["fas", "times"]} />
-                                                    </Button>
-                                                </OverlayTrigger>
-                                                :
-                                                <OverlayTrigger
-                                                    placement="auto"
-                                                    delay={{ show: 250, hide: 400 }}
-                                                    overlay={<Tooltip>Réintégrer</Tooltip>}
-                                                >
-                                                    <Button
-                                                        style={{ width: '100%', marginBottom: '10px' }}
-                                                        variant="outline-success"
-                                                        onClick={() => resetParent()}
+                                                        <Button
+                                                            style={{ width: '100%', marginBottom: '10px' }}
+                                                            variant="outline-danger"
+                                                            onClick={() => banParent()}
+                                                        >
+                                                            <FontAwesomeIcon icon={["fas", "times"]} />
+                                                        </Button>
+                                                    </OverlayTrigger>
+                                                    :
+                                                    <OverlayTrigger
+                                                        placement="auto"
+                                                        delay={{ show: 250, hide: 400 }}
+                                                        overlay={<Tooltip>Réintégrer</Tooltip>}
                                                     >
-                                                        <FontAwesomeIcon icon={["fas", "arrow-up"]} />
-                                                    </Button>
-                                                </OverlayTrigger>
-                                        )
-                                    }
-                                    <OverlayTrigger
-                                        placement="auto"
-                                        delay={{ show: 250, hide: 400 }}
-                                        overlay={<Tooltip>Modifier</Tooltip>}
+                                                        <Button
+                                                            style={{ width: '100%', marginBottom: '10px' }}
+                                                            variant="outline-success"
+                                                            onClick={() => resetParent()}
+                                                        >
+                                                            <FontAwesomeIcon icon={["fas", "arrow-up"]} />
+                                                        </Button>
+                                                    </OverlayTrigger>
+                                            )
+                                        }
+                                        <OverlayTrigger
+                                            placement="auto"
+                                            delay={{ show: 250, hide: 400 }}
+                                            overlay={<Tooltip>Modifier</Tooltip>}
+                                        >
+                                            <Button style={{ width: '100%' }} variant="outline-info" onClick={() => setshowEditParent(true)}>
+                                                <FontAwesomeIcon icon={["far", "edit"]} />
+                                            </Button>
+                                        </OverlayTrigger>
+                                    </Col>
+                                </Row>
+                            </Card.Header>
+                            <ListGroup className="list-group-flush" style={{ overflowY: 'auto' }}>
+                                {
+                                    JSON.parse(sessionStorage.getItem('userData')).user.Profil_Id > 2
+                                    &&
+                                    <Button
+                                        style={{ width: '100%' }}
+                                        variant="light"
+                                        onClick={() => setshowAddStudent(true)}
+                                        disabled={oneParent.Profil_Id < 2}
                                     >
-                                        <Button style={{ width: '100%' }} variant="outline-info" onClick={() => setshowEditParent(true)}>
-                                            <FontAwesomeIcon icon={["far", "edit"]} />
-                                        </Button>
-                                    </OverlayTrigger>
-                                </Col>
-                            </Row>
-                        </Card.Header>
-                        <ListGroup className="list-group-flush" style={{ overflowY: 'auto' }}>
-                            {
-                                JSON.parse(sessionStorage.getItem('userData')).user.Profil_Id > 2
-                                &&
-                                <Button
-                                    style={{ width: '100%' }}
-                                    variant="light"
-                                    onClick={() => setshowAddStudent(true)}
-                                    disabled={oneParent.Profil_Id < 2}
-                                >
-                                    <FontAwesomeIcon icon={["fas", "plus"]} /> Ajouter un enfant
+                                        <FontAwesomeIcon icon={["fas", "plus"]} /> Ajouter un enfant
                                 </Button>
-                            }
-                            {
-                                students.map(s =>
-                                    <ListGroup.Item
-                                        key={Idx(students, s)}
-                                        disabled={(s.Student_Id === 0) || oneParent.Profil_Id < 2}
-                                    >
-                                        <Row>
-                                            <Col xs="11">
-                                                <div>{s.Student}</div>
-                                                <p style={{ fontStyle: 'italic', fontSize: '0.75em' }}>
-                                                    {s.class}
-                                                </p>
-                                                {
-                                                    JSON.parse(sessionStorage.getItem('userData')).user.Profil_Id > 2
-                                                    &&
-                                                    (
-                                                        s.disabled
-                                                            ?
-                                                            <Badge variant='danger'>
-                                                                Bannis
-                                                            </Badge>
-                                                            :
-                                                            <Badge variant='success'>
-                                                                Inscrit
-                                                            </Badge>
-                                                    )
-                                                }
-                                            </Col>
-                                            <Col xs="1">
-                                                {
-                                                    JSON.parse(sessionStorage.getItem('userData')).user.Profil_Id > 2
-                                                    &&
-                                                    (
-                                                        s.disabled
-                                                            ?
-                                                            <OverlayTrigger
-                                                                placement="auto"
-                                                                delay={{ show: 250, hide: 400 }}
-                                                                overlay={<Tooltip>Réintégrer</Tooltip>}
-                                                            >
-                                                                <Button style={{ width: '100%' }} variant='outline-primary' onClick={() => resetStudent(s)}>
-                                                                    <FontAwesomeIcon icon={["fas", "arrow-up"]} />
-                                                                </Button>
-                                                            </OverlayTrigger>
-                                                            :
-                                                            <OverlayTrigger
-                                                                placement="auto"
-                                                                delay={{ show: 250, hide: 400 }}
-                                                                overlay={<Tooltip>Bannir</Tooltip>}
-                                                            >
-                                                                <Button style={{ width: '100%' }} variant='outline-danger' onClick={() => banStudent(s)}>
-                                                                    <FontAwesomeIcon icon={["fas", "times"]} />
-                                                                </Button>
-                                                            </OverlayTrigger>
-                                                    )
-                                                }
-                                            </Col>
-                                        </Row>
-                                    </ListGroup.Item>
-                                )
-                            }
-                        </ListGroup>
-                        <AddStudent
-                            show={showAddStudent}
-                            hide={() => setshowAddStudent(false)}
-                            setFirstname={e => setaddStudentFirstname(e.target.value)}
-                            setSurname={e => setaddStudentSurname(e.target.value)}
-                            setaddStudentBday={e => setaddStudentBday(e.target.value)}
-                            setClass={e => setaddStudentClass(e.target.value)}
-                            addStudent={() => addStudent()}
-                            parent={oneParent}
-                            classes={classes}
-                        />
-                        <EditParent
-                            show={showEditParent}
-                            hide={() => setshowEditParent(false)}
-                            pwdNotCorrect={editParentPwdCorrect}
-                            isAdmin={JSON.parse(sessionStorage.getItem('userData')).user.Profil_Id > 2}
-                            editPwd={() => editPwd()}
-                            checkPwd={() => checkPwd()}
-                            editInfo={() => editInfo()}
-                            setFirstname={e => seteditParentFirstname(e.target.value)}
-                            setSurname={e => seteditParentSurname(e.target.value)}
-                            setEmail={e => seteditParentEmail(e.target.value)}
-                            parent={oneParent}
-                            setOldPwd={e => seteditParentOldPwd(e.target.value)}
-                            setNewPwd={e => seteditParentNewPwd(e.target.value)}
-                            setConfPwd={e => seteditParentConfPwd(e.target.value === editParentNewPwd)}
-                        />
-                        <AddParent
-                            show={showAddParent}
-                            hide={() => setshowAddParent(false)}
-                            setFirstname={e => setaddParentFirstname(e.target.value)}
-                            setSurname={e => setaddParentSurname(e.target.value)}
-                            setEmail={e => setaddParentEmail(e.target.value)}
-                            setPassword={e => setaddParentPassword(e.target.value)}
-                            setConfPassword={e => setaddParentConfPassword(e.target.value === addParentPassword)}
-                            addParent={() => addParent()}
-                        />
-                    </Card>
+                                }
+                                {
+                                    students.map(s =>
+                                        <ListGroup.Item
+                                            key={Idx(students, s)}
+                                            disabled={(s.Student_Id === 0) || oneParent.Profil_Id < 2}
+                                        >
+                                            <Row>
+                                                <Col xs="11">
+                                                    <div>{s.Student}</div>
+                                                    <p style={{ fontStyle: 'italic', fontSize: '0.75em' }}>
+                                                        {s.class}
+                                                    </p>
+                                                    {
+                                                        JSON.parse(sessionStorage.getItem('userData')).user.Profil_Id > 2
+                                                        &&
+                                                        (
+                                                            s.Student_Id !== 0
+                                                            &&
+                                                            (
+                                                                s.disabled
+                                                                    ?
+                                                                    <Badge variant='danger'>
+                                                                        Bannis
+                                                                </Badge>
+                                                                    :
+                                                                    <Badge variant='success'>
+                                                                        Inscrit
+                                                                </Badge>
+                                                            )
+                                                        )
+                                                    }
+                                                </Col>
+                                                <Col xs="1">
+                                                    {
+                                                        JSON.parse(sessionStorage.getItem('userData')).user.Profil_Id > 2
+                                                        &&
+                                                        (
+                                                            s.Student_Id !== 0
+                                                            &&
+                                                            (
+                                                                s.disabled
+                                                                    ?
+                                                                    <OverlayTrigger
+                                                                        placement="auto"
+                                                                        delay={{ show: 250, hide: 400 }}
+                                                                        overlay={<Tooltip>Réintégrer</Tooltip>}
+                                                                    >
+                                                                        <Button style={{ width: '100%' }} variant='outline-primary' onClick={() => resetStudent(s)}>
+                                                                            <FontAwesomeIcon icon={["fas", "arrow-up"]} />
+                                                                        </Button>
+                                                                    </OverlayTrigger>
+                                                                    :
+                                                                    <OverlayTrigger
+                                                                        placement="auto"
+                                                                        delay={{ show: 250, hide: 400 }}
+                                                                        overlay={<Tooltip>Bannir</Tooltip>}
+                                                                    >
+                                                                        <Button style={{ width: '100%' }} variant='outline-danger' onClick={() => banStudent(s)}>
+                                                                            <FontAwesomeIcon icon={["fas", "times"]} />
+                                                                        </Button>
+                                                                    </OverlayTrigger>
+                                                            )
+                                                        )
+                                                    }
+                                                </Col>
+                                            </Row>
+                                        </ListGroup.Item>
+                                    )
+                                }
+                            </ListGroup>
+                            <AddStudent
+                                show={showAddStudent}
+                                hide={() => setshowAddStudent(false)}
+                                setFirstname={e => setaddStudentFirstname(e.target.value)}
+                                setSurname={e => setaddStudentSurname(e.target.value)}
+                                setaddStudentBday={e => setaddStudentBday(e.target.value)}
+                                setClass={e => setaddStudentClass(e.target.value)}
+                                addStudent={() => addStudent()}
+                                parent={oneParent}
+                                classes={classes}
+                            />
+                            <EditParent
+                                show={showEditParent}
+                                hide={() => setshowEditParent(false)}
+                                pwdNotCorrect={editParentPwdCorrect}
+                                isAdmin={JSON.parse(sessionStorage.getItem('userData')).user.Profil_Id > 2}
+                                editPwd={() => editPwd()}
+                                checkPwd={() => checkPwd()}
+                                editInfo={() => editInfo()}
+                                setFirstname={e => seteditParentFirstname(e.target.value)}
+                                setSurname={e => seteditParentSurname(e.target.value)}
+                                setEmail={e => seteditParentEmail(e.target.value)}
+                                parent={oneParent}
+                                setOldPwd={e => seteditParentOldPwd(e.target.value)}
+                                setNewPwd={e => seteditParentNewPwd(e.target.value)}
+                                setConfPwd={e => seteditParentConfPwd(e.target.value === editParentNewPwd)}
+                            />
+                            <AddParent
+                                show={showAddParent}
+                                hide={() => setshowAddParent(false)}
+                                setFirstname={e => setaddParentFirstname(e.target.value)}
+                                setSurname={e => setaddParentSurname(e.target.value)}
+                                setEmail={e => setaddParentEmail(e.target.value)}
+                                setPassword={e => setaddParentPassword(e.target.value)}
+                                setConfPassword={e => setaddParentConfPassword(e.target.value === addParentPassword)}
+                                addParent={() => addParent()}
+                            />
+                        </Card>
+                    </StickyBox>
                 </Col>
             </Row>
         </div>

@@ -2,6 +2,7 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 import { faArrowUp, faEdit, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useEffect, useState } from 'react';
+import StickyBox from "react-sticky-box";
 import { Alert, Button, Card, Col, Form, ListGroup, Modal, Nav, OverlayTrigger, Row, Tab, Tooltip } from 'react-bootstrap';
 import swal from 'sweetalert';
 import { apiUrl, getRequest, Idx, loadingTime, postAuthRequest } from '../links/links';
@@ -198,175 +199,178 @@ export function Teachers() {
                     </ListGroup>
                 </Col>
                 <Col xs="10">
-                    <Card style={{ width: '100%', minHeight: toEdit ? '60vh' : '30vh' }}>
-                        <Card.Header>
-                            <Row>
-                                <Col xs="11">
-                                    <Card.Title>{oneTeacher.Firstname} {oneTeacher.Surname}</Card.Title>
-                                    <p>
-                                        {oneTeacher.Class || <div style={{ fontStyle: 'italic', fontSize: '0.75rem' }}>Pas de classe</div>}
-                                    </p>
-                                </Col>
-                                <Col xs="1">
-                                    {
-                                        oneTeacher.Profil_Id < 1
-                                        ||
-                                        (
-                                            <Row>
-                                                {
-                                                    !toEdit
-                                                        ?
-                                                        (JSON.parse(sessionStorage.getItem('userData')).user.Profil_Id === 3 && oneTeacher.Profil_Id > JSON.parse(sessionStorage.getItem('userData')).user.Profil_Id)
-                                                        ||
-                                                        (
+                    <StickyBox offsetTop={80} offsetBottom={10}>
+
+                        <Card style={{ width: '100%', minHeight: toEdit ? '60vh' : '30vh' }}>
+                            <Card.Header>
+                                <Row>
+                                    <Col xs="11">
+                                        <Card.Title>{oneTeacher.Firstname} {oneTeacher.Surname}</Card.Title>
+                                        <p>
+                                            {oneTeacher.Class || <div style={{ fontStyle: 'italic', fontSize: '0.75rem' }}>Pas de classe</div>}
+                                        </p>
+                                    </Col>
+                                    <Col xs="1">
+                                        {
+                                            oneTeacher.Profil_Id < 1
+                                            ||
+                                            (
+                                                <Row>
+                                                    {
+                                                        !toEdit
+                                                            ?
+                                                            (JSON.parse(sessionStorage.getItem('userData')).user.Profil_Id === 3 && oneTeacher.Profil_Id > JSON.parse(sessionStorage.getItem('userData')).user.Profil_Id)
+                                                            ||
+                                                            (
+                                                                <OverlayTrigger
+                                                                    placement="auto"
+                                                                    delay={{ show: 250, hide: 400 }}
+                                                                    overlay={<Tooltip>Modifier</Tooltip>}
+                                                                >
+                                                                    <Button variant="outline-info" style={{ width: '90%' }} onClick={() => { settoEdit(true); console.log(teachers) }}>
+                                                                        <FontAwesomeIcon icon={["fas", 'edit']} />
+                                                                    </Button>
+                                                                </OverlayTrigger>
+                                                            )
+                                                            :
                                                             <OverlayTrigger
                                                                 placement="auto"
                                                                 delay={{ show: 250, hide: 400 }}
-                                                                overlay={<Tooltip>Modifier</Tooltip>}
+                                                                overlay={<Tooltip>Annuler</Tooltip>}
                                                             >
-                                                                <Button variant="outline-info" style={{ width: '90%' }} onClick={() => { settoEdit(true); console.log(teachers) }}>
-                                                                    <FontAwesomeIcon icon={["fas", 'edit']} />
+                                                                <Button variant="outline-secondary" style={{ width: '90%' }} onClick={() => settoEdit(false)}>
+                                                                    <FontAwesomeIcon icon={["fas", 'times']} />
                                                                 </Button>
                                                             </OverlayTrigger>
-                                                        )
-                                                        :
-                                                        <OverlayTrigger
-                                                            placement="auto"
-                                                            delay={{ show: 250, hide: 400 }}
-                                                            overlay={<Tooltip>Annuler</Tooltip>}
-                                                        >
-                                                            <Button variant="outline-secondary" style={{ width: '90%' }} onClick={() => settoEdit(false)}>
-                                                                <FontAwesomeIcon icon={["fas", 'times']} />
-                                                            </Button>
-                                                        </OverlayTrigger>
-                                                }
-                                                {
-                                                    oneTeacher.Profil_Id >= JSON.parse(sessionStorage.getItem('userData')).user.Profil_Id
-                                                    ||
-                                                    (
-                                                        !toEdit
-                                                        &&
+                                                    }
+                                                    {
+                                                        oneTeacher.Profil_Id >= JSON.parse(sessionStorage.getItem('userData')).user.Profil_Id
+                                                        ||
                                                         (
-                                                            oneTeacher.Profil_Id < 2
-                                                                ?
-                                                                <OverlayTrigger
-                                                                    placement="auto"
-                                                                    delay={{ show: 250, hide: 400 }}
-                                                                    overlay={<Tooltip>Réintégrer</Tooltip>}
-                                                                >
-                                                                    <Button variant="outline-primary" style={{ width: '90%', marginTop: '5px' }} onClick={() => reHireTeacher(oneTeacher)}>
-                                                                        <FontAwesomeIcon icon={["fas", "arrow-up"]} />
-                                                                    </Button>
-                                                                </OverlayTrigger>
-                                                                :
-                                                                <OverlayTrigger
-                                                                    placement="auto"
-                                                                    delay={{ show: 250, hide: 400 }}
-                                                                    overlay={<Tooltip>Bannir</Tooltip>}
-                                                                >
-                                                                    <Button variant="outline-danger" style={{ width: '90%', marginTop: '5px' }} onClick={() => banTeacher(oneTeacher)}>
-                                                                        <FontAwesomeIcon icon={["fas", "times"]} />
-                                                                    </Button>
-                                                                </OverlayTrigger>
+                                                            !toEdit
+                                                            &&
+                                                            (
+                                                                oneTeacher.Profil_Id < 2
+                                                                    ?
+                                                                    <OverlayTrigger
+                                                                        placement="auto"
+                                                                        delay={{ show: 250, hide: 400 }}
+                                                                        overlay={<Tooltip>Réintégrer</Tooltip>}
+                                                                    >
+                                                                        <Button variant="outline-primary" style={{ width: '90%', marginTop: '5px' }} onClick={() => reHireTeacher(oneTeacher)}>
+                                                                            <FontAwesomeIcon icon={["fas", "arrow-up"]} />
+                                                                        </Button>
+                                                                    </OverlayTrigger>
+                                                                    :
+                                                                    <OverlayTrigger
+                                                                        placement="auto"
+                                                                        delay={{ show: 250, hide: 400 }}
+                                                                        overlay={<Tooltip>Bannir</Tooltip>}
+                                                                    >
+                                                                        <Button variant="outline-danger" style={{ width: '90%', marginTop: '5px' }} onClick={() => banTeacher(oneTeacher)}>
+                                                                            <FontAwesomeIcon icon={["fas", "times"]} />
+                                                                        </Button>
+                                                                    </OverlayTrigger>
+                                                            )
                                                         )
-                                                    )
-                                                }
+                                                    }
+                                                </Row>
+                                            )
+
+                                        }
+                                    </Col>
+                                </Row>
+                            </Card.Header>
+                            {
+                                toEdit
+                                    ?
+                                    <Card.Body style={{ overflow: 'auto' }}>
+                                        <Tab.Container id="left-tabs-example" defaultActiveKey="first">
+                                            <Row>
+                                                <Col sm={3}>
+                                                    <Nav variant="pills" className="flex-column">
+                                                        <Nav.Item>
+                                                            <Nav.Link eventKey="first">Informations générales</Nav.Link>
+                                                        </Nav.Item>
+                                                        <Nav.Item>
+                                                            <Nav.Link eventKey="second">Mot de passe</Nav.Link>
+                                                        </Nav.Item>
+                                                    </Nav>
+                                                </Col>
+                                                <Col sm={9}>
+                                                    <Tab.Content>
+                                                        <Tab.Pane eventKey="first">
+                                                            <EditTeacher
+                                                                oneTeacher={oneTeacher}
+                                                                toEdit={toEdit}
+                                                                setfirstname={e => setfirstname(e.target.value)}
+                                                                setsurname={e => setsurname(e.target.value)}
+                                                                setprofilEdit={e => setprofilEdit(e.target.value)}
+                                                                profiles={profiles}
+                                                                setemail={e => setemail(e.target.value)}
+                                                                editTeacher={() => editTeacher()}
+                                                            />
+                                                        </Tab.Pane>
+                                                        <Tab.Pane eventKey="second">
+                                                            <EditPassword
+                                                                teacher={oneTeacher}
+                                                                setoldpwd={e => setoldpwd(e.target.value)}
+                                                                setnewpwd={e => setnewpwd(e.target.value)}
+                                                                setconfpassword={e => setconfpassword(newpwd === e.target.value)}
+                                                                isPwdNotCorrect={pwdNotCorrect}
+                                                                checkPassword={() => checkPassword(oneTeacher)}
+                                                                editPassword={() => editPassword(oneTeacher)}
+                                                            />
+                                                        </Tab.Pane>
+                                                    </Tab.Content>
+                                                </Col>
                                             </Row>
-                                        )
+                                        </Tab.Container>
+                                    </Card.Body>
 
-                                    }
-                                </Col>
-                            </Row>
-                        </Card.Header>
-                        {
-                            toEdit
-                                ?
-                                <Card.Body style={{ overflow: 'auto' }}>
-                                    <Tab.Container id="left-tabs-example" defaultActiveKey="first">
-                                        <Row>
-                                            <Col sm={3}>
-                                                <Nav variant="pills" className="flex-column">
-                                                    <Nav.Item>
-                                                        <Nav.Link eventKey="first">Informations générales</Nav.Link>
-                                                    </Nav.Item>
-                                                    <Nav.Item>
-                                                        <Nav.Link eventKey="second">Mot de passe</Nav.Link>
-                                                    </Nav.Item>
-                                                </Nav>
-                                            </Col>
-                                            <Col sm={9}>
-                                                <Tab.Content>
-                                                    <Tab.Pane eventKey="first">
-                                                        <EditTeacher
-                                                            oneTeacher={oneTeacher}
-                                                            toEdit={toEdit}
-                                                            setfirstname={e => setfirstname(e.target.value)}
-                                                            setsurname={e => setsurname(e.target.value)}
-                                                            setprofilEdit={e => setprofilEdit(e.target.value)}
-                                                            profiles={profiles}
-                                                            setemail={e => setemail(e.target.value)}
-                                                            editTeacher={() => editTeacher()}
-                                                        />
-                                                    </Tab.Pane>
-                                                    <Tab.Pane eventKey="second">
-                                                        <EditPassword
-                                                            teacher={oneTeacher}
-                                                            setoldpwd={e => setoldpwd(e.target.value)}
-                                                            setnewpwd={e => setnewpwd(e.target.value)}
-                                                            setconfpassword={e => setconfpassword(newpwd === e.target.value)}
-                                                            isPwdNotCorrect={pwdNotCorrect}
-                                                            checkPassword={() => checkPassword(oneTeacher)}
-                                                            editPassword={() => editPassword(oneTeacher)}
-                                                        />
-                                                    </Tab.Pane>
-                                                </Tab.Content>
-                                            </Col>
-                                        </Row>
-                                    </Tab.Container>
-                                </Card.Body>
-
-                                :
-                                <Card.Body style={{ overflowX: 'auto' }}>
-                                    <Form>
-                                        <Form.Group as={Row} controlId="formFirstname">
-                                            <Form.Label column sm="2">
-                                                Prénom
+                                    :
+                                    <Card.Body style={{ overflowX: 'auto' }}>
+                                        <Form>
+                                            <Form.Group as={Row} controlId="formFirstname">
+                                                <Form.Label column sm="2">
+                                                    Prénom
                                             </Form.Label>
-                                            <Col sm="10">
-                                                <Form.Control plaintext readOnly placeholder={oneTeacher.Firstname} />
-                                            </Col>
-                                        </Form.Group>
+                                                <Col sm="10">
+                                                    <Form.Control plaintext readOnly placeholder={oneTeacher.Firstname} />
+                                                </Col>
+                                            </Form.Group>
 
-                                        <Form.Group as={Row} controlId="formSurname">
-                                            <Form.Label column sm="2">
-                                                Nom de famille
+                                            <Form.Group as={Row} controlId="formSurname">
+                                                <Form.Label column sm="2">
+                                                    Nom de famille
                                         </Form.Label>
-                                            <Col sm="10">
-                                                <Form.Control plaintext readOnly placeholder={oneTeacher.Surname} />
-                                            </Col>
-                                        </Form.Group>
+                                                <Col sm="10">
+                                                    <Form.Control plaintext readOnly placeholder={oneTeacher.Surname} />
+                                                </Col>
+                                            </Form.Group>
 
-                                        <Form.Group as={Row} controlId="formClass">
-                                            <Form.Label column sm="2">
-                                                Classe
+                                            <Form.Group as={Row} controlId="formClass">
+                                                <Form.Label column sm="2">
+                                                    Classe
                                             </Form.Label>
-                                            <Col sm="10">
-                                                <Form.Control plaintext readOnly placeholder={oneTeacher.Class || 'Pas de classe'} />
-                                            </Col>
-                                        </Form.Group>
+                                                <Col sm="10">
+                                                    <Form.Control plaintext readOnly placeholder={oneTeacher.Class || 'Pas de classe'} />
+                                                </Col>
+                                            </Form.Group>
 
-                                        <Form.Group as={Row} controlId="formPlaintextEmail">
-                                            <Form.Label column sm="2">
-                                                Email
+                                            <Form.Group as={Row} controlId="formPlaintextEmail">
+                                                <Form.Label column sm="2">
+                                                    Email
                                             </Form.Label>
-                                            <Col sm="10">
-                                                <Form.Control plaintext readOnly placeholder={toEdit ? null : oneTeacher.EmailAddress} />
-                                            </Col>
-                                        </Form.Group>
-                                    </Form>
-                                </Card.Body>
-                        }
-                    </Card>
+                                                <Col sm="10">
+                                                    <Form.Control plaintext readOnly placeholder={toEdit ? null : oneTeacher.EmailAddress} />
+                                                </Col>
+                                            </Form.Group>
+                                        </Form>
+                                    </Card.Body>
+                            }
+                        </Card>
+                    </StickyBox>
                 </Col>
             </Row>
             <AddTeacher
@@ -572,7 +576,7 @@ function EditTeacher(props) {
                             Email
                                             </Form.Label>
                         <Col sm="10">
-                            <Form.Control type="email" placeholder={oneTeacher.EmailAddress} onChange={props.setemail} />
+                            <Form.Control type="email" disabled={JSON.parse(sessionStorage.getItem('userData')).user.Profil_Id < 3} placeholder={oneTeacher.EmailAddress} onChange={props.setemail} />
                         </Col>
                     </Form.Group>
                 </Form>

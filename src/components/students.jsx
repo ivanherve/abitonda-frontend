@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Card, Col, Form, ListGroup, Modal, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
+import { Button, Card, CardColumns, Col, Form, ListGroup, Modal, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 import { apiUrl, getRequest, Idx, loadingTime, postAuthRequest } from '../links/links';
 import StickyBox from "react-sticky-box";
 import { LoadingComponent } from './LoadingComponent';
-import { ListItem, ModalFile, delItem } from './classes';
+import { ListItem, ModalFile, delItem, CardItem, defaultImg } from './classes';
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faEdit, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -35,6 +35,7 @@ export function Students() {
     const [editStudentBirthDate, seteditStudentBirthDate] = useState('');
     const [editStudentParent, seteditStudentParent] = useState('');
     const [editStudentClass, setEditStudentClass] = useState('');
+    const [isList, setisList] = useState(true);
 
     const getStudents = () => {
         fetch(`${apiUrl}getstudents`, getRequest(JSON.parse(sessionStorage.getItem('userData')).token.api_token))
@@ -204,6 +205,19 @@ export function Students() {
                                             }
                                         </Row>
                                     </Col>
+                                    {
+                                        /*
+                                <Col xs="1">
+                                        <Button variant="light" onClick={() => setisList(true)}>
+                                        <FontAwesomeIcon icon={["fas", "list"]} />
+                                    </Button>
+                                    <br />
+                                    <Button variant="light" onClick={() => setisList(false)}>
+                                        <FontAwesomeIcon icon={["fas", "th"]} />
+                                    </Button>
+                                </Col>
+                                        */
+                                    }
                                 </Row>
                             </Card.Header>
                             <ListGroup className="list-group-flush" style={{ overflowY: 'auto' }}>
@@ -214,19 +228,43 @@ export function Students() {
                                             Il n'y a pas de support existant pour le moment dans sa classe
                                         </ListGroup.Item>
                                         :
-                                        items.map(i =>
-                                            <ListItem
-                                                key={Idx(items, i)}
-                                                title={i.Title}
-                                                details={i.details}
-                                                click={() => {
-                                                    setshowModal(true);
-                                                    setimg(i.File);
-                                                    setItemId(i.Item_Id);
-                                                    setoneItem(i);
-                                                }}
-                                                date={i.updated_at}
-                                            />
+                                        (
+                                            isList
+                                                ?
+                                                items.map(i =>
+                                                    <ListItem
+                                                        key={Idx(items, i)}
+                                                        title={i.Title}
+                                                        details={i.details}
+                                                        click={() => {
+                                                            setshowModal(true);
+                                                            setimg(i.File);
+                                                            setItemId(i.Item_Id);
+                                                            setoneItem(i);
+                                                        }}
+                                                        date={i.updated_at}
+                                                    />
+                                                )
+                                                :
+                                                <CardColumns style={{ marginTop: '10px', height: '100%' }}>
+                                                    {
+                                                        items.map(i =>
+                                                            <CardItem
+                                                                key={Idx(items, i)}
+                                                                title={i.Title}
+                                                                details={i.Details}
+                                                                imgSrc={i.File ? i.File : defaultImg(i.Type, Idx(i.Type, "image") !== -1 && i.Link)}
+                                                                click={() => {
+                                                                    setshowModal(true);
+                                                                    setimg(i.File);
+                                                                    setItemId(i.Item_Id);
+                                                                    setoneItem(i);
+                                                                }}
+                                                                date={i.updated_at}
+                                                            />
+                                                        )
+                                                    }
+                                                </CardColumns>
                                         )
                                 }
 

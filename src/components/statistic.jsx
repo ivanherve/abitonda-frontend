@@ -38,7 +38,7 @@ function Graph(props) {
     return (
         <Card style={{ width: '100%', height: '75vh' }}>
             <Card.Header>
-                <h3>{props.title}</h3>
+                <h4>{props.title}</h4>
             </Card.Header>
             <Card.Body>
                 <Line

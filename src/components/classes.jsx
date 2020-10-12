@@ -2,13 +2,14 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 import { faEdit } from '@fortawesome/free-regular-svg-icons';
 import { faArrowUp, faExclamationTriangle, faList, faTh, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import StickyBox from "react-sticky-box";
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import { Alert, Button, ButtonGroup, Card, CardColumns, Col, Form, Image, ListGroup, Modal, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 import FileBase64 from 'react-file-base64';
-import { Redirect } from 'react-router-dom';
+import { BrowserRouter, Redirect, Route } from 'react-router-dom';
 import swal from 'sweetalert';
-import { apiUrl, getRequest, loadingTime, postAuthRequest, variantElement } from '../links/links';
+import { apiUrl, getRequest, Idx, loadingTime, postAuthRequest, variantElement } from '../links/links';
 import { ModalAddClassTeacher } from './AddClassTeacher';
 import { EditClass } from './EditClass';
 import backgroundImg from '../img/Shrug-Emoji.jpg';
@@ -46,6 +47,18 @@ export const delItem = (itemId) => {
                     })
             }
         });
+}
+
+const contains = (sentence, element) => {
+    return Idx(sentence, element) !== -1
+}
+
+export const defaultImg = (type) => {
+    if (contains(type, 'pdf')) return require('../img/pdflogo2.svg');
+    else if (contains(type, "external-link")) return require('../img/videoLogo2.svg');
+    else if (contains(type, "application/vnd.openxmlformats-officedocument.wordprocessingml.document")) return require('../img/docxLogo.png');
+    //else if (contains(type, "image")) return require('../img/');
+    return require('../img/fileLogo.jpg')
 }
 
 export function Classe() {
@@ -187,7 +200,6 @@ export function Classe() {
                                                 variant={variantElement(c, JSON.parse(sessionStorage.getItem('userData')).user)}
                                                 action
                                                 key={classes.indexOf(c)}
-                                                href={`#${c.Class}`}
                                                 onClick={() => {
                                                     setoneClass(c);
                                                     setteachers(c.Teacher);
@@ -205,142 +217,156 @@ export function Classe() {
                         }
                     </Col>
                     <Col xs='10'>
-                        <Card
-                            style={{ width: '100%', minHeight: '75%' }}
-                        >
-                            <Card.Header>
-                                <Row>
-                                    <Col xs={JSON.parse(sessionStorage.getItem('userData')).user.Profil_Id > 2 ? "10" : "11"}>
-                                        <Card.Title>{oneClass.Class}</Card.Title>
-                                        <Card.Text>
-                                            <i>{teachers}</i>
-                                        </Card.Text>
-                                    </Col>
-                                    {
-                                        JSON.parse(sessionStorage.getItem('userData')).user.Profil_Id > 2
-                                        &&
-                                        <Col xs="1">
-                                            {
-                                                oneClass.disabled
-                                                    ?
-                                                    <OverlayTrigger
-                                                        placement="top"
-                                                        delay={{ show: 250, hide: 400 }}
-                                                        overlay={<Tooltip>Rétablir</Tooltip>}
-                                                    >
-                                                        <Button variant="light" onClick={() => rebuildClass()}>
-                                                            <FontAwesomeIcon icon={["fas", "arrow-up"]} />
-                                                        </Button>
-                                                    </OverlayTrigger>
-                                                    :
-                                                    <OverlayTrigger
-                                                        placement="top"
-                                                        delay={{ show: 250, hide: 400 }}
-                                                        overlay={<Tooltip>Supprimer</Tooltip>}
-                                                    >
-                                                        <Button variant="light" onClick={() => delClass()}>
-                                                            <FontAwesomeIcon icon={["fas", "times"]} />
-                                                        </Button>
-                                                    </OverlayTrigger>
-                                            }
-
-                                            <br />
-                                            <OverlayTrigger
-                                                placement="bottom"
-                                                delay={{ show: 250, hide: 400 }}
-                                                overlay={<Tooltip>Modifier</Tooltip>}
-                                            >
-                                                <Button variant="light" onClick={() => setshowEditClass(true)}>
-                                                    <FontAwesomeIcon icon={["far", "edit"]} />
-                                                </Button>
-                                            </OverlayTrigger>
+                        <StickyBox offsetTop={80} offsetBottom={10}>
+                            <Card
+                                style={{ width: '100%', minHeight: '75vh' }}
+                            >
+                                <Card.Header>
+                                    <Row>
+                                        <Col xs={JSON.parse(sessionStorage.getItem('userData')).user.Profil_Id > 2 ? "10" : "11"}>
+                                            <Card.Title>{oneClass.Class}</Card.Title>
+                                            <Card.Text>
+                                                <i>{teachers}</i>
+                                            </Card.Text>
                                         </Col>
-                                    }
-                                    <Col xs="1">
-                                        <Button variant="light" onClick={() => setisList(true)}>
-                                            <FontAwesomeIcon icon={["fas", "list"]} />
-                                        </Button>
-                                        <br />
-                                        <Button variant="light" onClick={() => setisList(false)}>
-                                            <FontAwesomeIcon icon={["fas", "th"]} />
-                                        </Button>
-                                    </Col>
-                                </Row>
-                            </Card.Header>
-                            <ButtonGroup>
-                                <Button style={{ width: '50%' }} variant="outline-primary" onClick={() => setshowAddFile(true)}>
-                                    Ajouter un fichier
-                                </Button>
-                                <Button style={{ width: '50%' }} variant="outline-info" onClick={() => setshowAddLink(true)}>
-                                    Ajouter un lien
-                                </Button>
-                            </ButtonGroup>
-                            <div style={{ overflowY: 'auto' }}>
-                                {
-                                    isList
-                                        ?
-                                        <ListGroup className="list-group-flush">
-                                            {
-                                                items.length >= 1
-                                                    ?
-                                                    items.map(i =>
-                                                        <ListItem
-                                                            key={items.indexOf(i)}
-                                                            title={i.Title}
-                                                            details={i.details}
-                                                            click={() => {
-                                                                setshowModal(true);
-                                                                setimg(i.File);
-                                                                setItemId(i.Item_Id);
-                                                                setoneItem(i);
-                                                            }}
-                                                            date={i.updated_at}
-                                                        />
-                                                    )
-                                                    :
-                                                    <ListItem
-                                                        title="Il n'y a pas de support ici"
-                                                        disabled
-                                                    />
-                                            }
+                                        {
+                                            JSON.parse(sessionStorage.getItem('userData')).user.Profil_Id > 2
+                                            &&
+                                            <Col xs="1">
+                                                {
+                                                    oneClass.disabled
+                                                        ?
+                                                        <OverlayTrigger
+                                                            placement="top"
+                                                            delay={{ show: 250, hide: 400 }}
+                                                            overlay={<Tooltip>Rétablir</Tooltip>}
+                                                        >
+                                                            <Button variant="light" onClick={() => rebuildClass()}>
+                                                                <FontAwesomeIcon icon={["fas", "arrow-up"]} />
+                                                            </Button>
+                                                        </OverlayTrigger>
+                                                        :
+                                                        <OverlayTrigger
+                                                            placement="top"
+                                                            delay={{ show: 250, hide: 400 }}
+                                                            overlay={<Tooltip>Supprimer</Tooltip>}
+                                                        >
+                                                            <Button variant="light" onClick={() => delClass()}>
+                                                                <FontAwesomeIcon icon={["fas", "times"]} />
+                                                            </Button>
+                                                        </OverlayTrigger>
+                                                }
 
-                                        </ListGroup>
-                                        :
-                                        <Card.Body style={{ overflowY: 'auto' }}>
-                                            {
-                                                items.length >= 1
-                                                    ?
-                                                    <CardColumns style={{ marginTop: '10px', height: '100%' }}>
-                                                        {
-                                                            items.map(i =>
-                                                                <CardItem
-                                                                    key={i.PdfItem_Id}
-                                                                    title={i.Title}
-                                                                    details={i.Details}
-                                                                    imgSrc={i.File ? i.File : require('../img/videoLogo2.svg')}
-                                                                    click={() => {
-                                                                        setshowModal(true);
-                                                                        setimg(i.File);
-                                                                        setItemId(i.Item_Id);
-                                                                        setoneItem(i);
-                                                                    }}
-                                                                    date={i.updated_at}
-                                                                />
-                                                            )
-                                                        }
-                                                    </CardColumns>
-                                                    :
-                                                    <ListGroup className="list-group-flush">
+                                                <br />
+                                                <OverlayTrigger
+                                                    placement="bottom"
+                                                    delay={{ show: 250, hide: 400 }}
+                                                    overlay={<Tooltip>Modifier</Tooltip>}
+                                                >
+                                                    <Button variant="light" onClick={() => setshowEditClass(true)}>
+                                                        <FontAwesomeIcon icon={["far", "edit"]} />
+                                                    </Button>
+                                                </OverlayTrigger>
+                                            </Col>
+                                        }
+                                        <Col xs="1">
+                                            <Button variant="light" onClick={() => setisList(true)}>
+                                                <FontAwesomeIcon icon={["fas", "list"]} />
+                                            </Button>
+                                            <br />
+                                            <Button variant="light" onClick={() => setisList(false)}>
+                                                <FontAwesomeIcon icon={["fas", "th"]} />
+                                            </Button>
+                                        </Col>
+                                    </Row>
+                                </Card.Header>
+                                <ButtonGroup>
+                                    <Button
+                                        style={{ width: '50%' }}
+                                        variant="outline-primary"
+                                        onClick={() => setshowAddFile(true)}
+                                        disabled={oneClass.disabled}
+                                    >
+                                        Ajouter un fichier
+                                    </Button>
+                                    <Button
+                                        style={{ width: '50%' }}
+                                        variant="outline-info"
+                                        onClick={() => setshowAddLink(true)}
+                                        disabled={oneClass.disabled}
+                                    >
+                                        Ajouter un lien
+                                    </Button>
+                                </ButtonGroup>
+                                <div style={{ overflowY: 'auto' }}>
+                                    {
+                                        isList
+                                            ?
+                                            <ListGroup className="list-group-flush">
+                                                {
+                                                    items.length >= 1
+                                                        ?
+                                                        items.map(i =>
+                                                            <ListItem
+                                                                key={items.indexOf(i)}
+                                                                title={i.Title}
+                                                                details={i.details}
+                                                                click={() => {
+                                                                    setshowModal(true);
+                                                                    setimg(i.File);
+                                                                    setItemId(i.Item_Id);
+                                                                    setoneItem(i);
+                                                                }}
+                                                                date={i.updated_at}
+                                                            />
+                                                        )
+                                                        :
                                                         <ListItem
                                                             title="Il n'y a pas de support ici"
                                                             disabled
+                                                            hasElement={false}
                                                         />
-                                                    </ListGroup>
-                                            }
-                                        </Card.Body>
-                                }
-                            </div>
-                        </Card>
+                                                }
+
+                                            </ListGroup>
+                                            :
+                                            <Card.Body style={{ overflowY: 'auto' }}>
+                                                {
+                                                    items.length >= 1
+                                                        ?
+                                                        <CardColumns style={{ marginTop: '10px', height: '100%' }}>
+                                                            {
+                                                                items.map(i =>
+                                                                    <CardItem
+                                                                        key={i.PdfItem_Id}
+                                                                        title={i.Title}
+                                                                        details={i.Details}
+                                                                        imgSrc={i.File ? i.File : defaultImg(i.Type, Idx(i.Type, "image") !== -1 && i.Link)}
+                                                                        click={() => {
+                                                                            setshowModal(true);
+                                                                            setimg(i.File);
+                                                                            setItemId(i.Item_Id);
+                                                                            setoneItem(i);
+                                                                        }}
+                                                                        date={i.updated_at}
+                                                                    />
+                                                                )
+                                                            }
+                                                        </CardColumns>
+                                                        :
+                                                        <ListGroup className="list-group-flush">
+                                                            <ListItem
+                                                                title="Il n'y a pas de support ici"
+                                                                disabled
+                                                                hasElement={false}
+                                                            />
+                                                        </ListGroup>
+                                                }
+                                            </Card.Body>
+                                    }
+                                </div>
+                            </Card>
+                        </StickyBox>
                     </Col>
                     <ModalFile
                         show={showModal}
@@ -373,11 +399,6 @@ export function Classe() {
                         classe={oneClass}
                     />
                 </Row>
-                {
-                    window.location.pathname === "/classes"
-                    &&
-                    <Redirect to="/classes#TPS" />
-                }
             </div>
         )
     }
@@ -398,7 +419,7 @@ export function Classe() {
         )
 }
 
-function CardItem({ title, details, click, imgSrc, date }) {
+export function CardItem({ title, details, click, imgSrc, date }) {
     const [hovered, sethovered] = useState(false);
     return (
         <Card
@@ -422,7 +443,7 @@ function CardItem({ title, details, click, imgSrc, date }) {
     )
 }
 
-export function ListItem({ title, details, click, disabled = false, date }) {
+export function ListItem({ title, details, click, disabled = false, date, hasElement = true }) {
     return (
         <ListGroup.Item
             action
@@ -437,9 +458,13 @@ export function ListItem({ title, details, click, disabled = false, date }) {
                     </p>
                 </Col>
                 <Col>
-                    <p style={{ fontStyle: 'italic', fontSize: '0.75em' }}>
-                        {moment(date).format('Do MMMM YYYY, HH:mm')}
-                    </p>
+                    {
+                        hasElement
+                        &&
+                        <p style={{ fontStyle: 'italic', fontSize: '0.75em' }}>
+                            {moment(date).format('Do MMMM YYYY, HH:mm')}
+                        </p>
+                    }
                 </Col>
             </Row>
         </ListGroup.Item>
@@ -463,7 +488,8 @@ export function ModalFile(props) {
     console.log(props);
 
     const downloadItem = (itemId) => {
-        fetch(`${apiUrl}download/${itemId}`, getRequest(JSON.parse(sessionStorage.getItem('userData')).token.api_token))
+        let userId = JSON.parse(sessionStorage.getItem('userData')).user.User_Id;
+        fetch(`${apiUrl}download/${itemId}/${userId}`, getRequest(JSON.parse(sessionStorage.getItem('userData')).token.api_token))
             .then(r => window.open(r.url))
             .then(r => {
                 if (!r.status)
@@ -505,143 +531,84 @@ export function ModalFile(props) {
             centered
             size={toEdit ? "xl" : "lg"}
         >
-            {
-                item.Type.indexOf('image') !== -1
-                    ?
-                    // Image
-                    <Row style={{ margin: '10px' }}>
-                        {
-                            !toEdit
-                            &&
-                            <Col xs="4">
-                                <Image src={imgSrc} fluid />
-                            </Col>
-                        }
-                        <Col>
-                            {
-                                toEdit
-                                    ?
-                                    <Form.Group>
-                                        <Form.Label>
-                                            Titre
-                                        </Form.Label>
-                                        <Form.Control placeholder={item.Title} onChange={e => settitle(e.target.value)} />
-                                    </Form.Group>
-                                    :
-                                    <Modal.Title>
-                                        {item.Title}
-                                    </Modal.Title>
-                            }
-                            {
-                                toEdit
-                                    ?
-                                    <Form.Group>
-                                        <Form.Label>
-                                            Description
-                                        </Form.Label>
-                                        <Form.Control placeholder={item.details} onChange={e => setdetails(e.target.value)} />
-                                    </Form.Group>
-                                    :
-                                    <p>
-                                        {item.details}
-                                    </p>
-                            }
-                            {
-                                toEdit
-                                &&
+            <Modal.Body>
+                {
+                    toEdit
+                        ?
+                        <Form.Group>
+                            <Form.Label>
+                                Titre
+                                    </Form.Label>
+                            <Form.Control placeholder={item.Title.indexOf('.') !== -1 ? item.Title.substring(0, item.Title.indexOf('.')) : item.Title} onChange={e => settitle(e.target.value)} />
+                        </Form.Group>
+                        :
+                        <Modal.Title>
+                            {item.Title}
+                        </Modal.Title>
+                }
+                {
+                    toEdit
+                        ?
+                        <Form.Group>
+                            <Form.Label>
+                                Description
+                                    </Form.Label>
+                            <Form.Control as="textarea" placeholder={item.details} onChange={e => setdetails(e.target.value)} />
+                        </Form.Group>
+                        :
+                        <p>
+                            {item.details}
+                        </p>
+                }
+                {
+                    toEdit
+                    && (
+                        item.Link
+                            ?
+                            item.Link.indexOf('http') !== -1
+                                ?
+                                <Form.Group>
+                                    <Form.Label>
+                                        Lien
+                                            </Form.Label>
+                                    <Form.Control type="url" placeholder={item.Link} onChange={e => setlink(e.target.value)} />
+                                </Form.Group>
+                                :
                                 <Form.Group>
                                     <Form.Label>
                                         Source
                                     </Form.Label>
-                                    <br />
-                                    <FileBase64
-                                        className='form-control-file'
-                                        onDone={(e) => setblob(e.base64)}
-                                    />
+                                    <Form.Control type="file" onChange={(e) => setlinkItem(e.target.files[0])} />
                                 </Form.Group>
-                            }
-                        </Col>
-                    </Row>
-                    :
-                    <Modal.Body>
-                        {
-                            toEdit
-                                ?
-                                <Form.Group>
-                                    <Form.Label>
-                                        Titre
+                            :
+                            <Form.Group>
+                                <Form.Label>
+                                    Source
                                     </Form.Label>
-                                    <Form.Control placeholder={item.Title.indexOf('.') !== -1 ? item.Title.substring(0, item.Title.indexOf('.')) : item.Title} onChange={e => settitle(e.target.value)} />
-                                </Form.Group>
-                                :
-                                <Modal.Title>
-                                    {item.Title}
-                                </Modal.Title>
-                        }
-                        {
-                            toEdit
-                                ?
-                                <Form.Group>
-                                    <Form.Label>
-                                        Description
-                                    </Form.Label>
-                                    <Form.Control as="textarea" placeholder={item.details} onChange={e => setdetails(e.target.value)} />
-                                </Form.Group>
-                                :
-                                <p>
-                                    {item.details}
-                                </p>
-                        }
-                        {
-                            toEdit
-                            && (
-                                item.Link
-                                    ?
-                                    item.Link.indexOf('http') !== -1
-                                        ?
-                                        <Form.Group>
-                                            <Form.Label>
-                                                Lien
-                                            </Form.Label>
-                                            <Form.Control type="url" placeholder={item.Link} onChange={e => setlink(e.target.value)} />
-                                        </Form.Group>
-                                        :
-                                        <Form.Group>
-                                            <Form.Label>
-                                                Source
-                                    </Form.Label>
-                                            <Form.Control type="file" onChange={(e) => setlinkItem(e.target.files[0])} />
-                                        </Form.Group>
-                                    :
-                                    <Form.Group>
-                                        <Form.Label>
-                                            Source
-                                    </Form.Label>
-                                        <Form.Control type="file" onChange={() => console.log('ici')} />
-                                    </Form.Group>)
-                        }
-                        {
-                            !toEdit
-                                &&
-                                item
-                                &&
-                                item.Link
-                                &&
-                                item.Link.indexOf("http") === -1
-                                ?
-                                <Button
-                                    variant="outline-secondary"
-                                    onClick={() => downloadItem(item.Item_Id)}
-                                >
-                                    Télécharger le document
+                                <Form.Control type="file" onChange={() => console.log('ici')} />
+                            </Form.Group>)
+                }
+                {
+                    !toEdit
+                        &&
+                        item
+                        &&
+                        item.Link
+                        &&
+                        item.Link.indexOf("http") === -1
+                        ?
+                        <Button
+                            variant="outline-secondary"
+                            onClick={() => downloadItem(item.Item_Id)}
+                        >
+                            Télécharger le document
                                 </Button>
-                                :
-                                !toEdit
-                                &&
-                                <a target="blank" href={item.Link}>Accéder au lien</a>
-                        }
-                    </Modal.Body>
-            }
+                        :
+                        !toEdit
+                        &&
+                        <a target="blank" href={item.Link}>Accéder au lien</a>
+                }
+            </Modal.Body>
             {
                 props.isAdmin
                 &&
@@ -671,14 +638,14 @@ export function ModalFile(props) {
                                 onClick={setEdit}
                             >
                                 Annuler
-                        </Button>
+                            </Button>
                             :
                             <Button
                                 variant="outline-danger"
                                 onClick={del}
                             >
                                 Supprimer
-                        </Button>
+                            </Button>
                     }
                 </Modal.Footer>
             }
@@ -767,7 +734,7 @@ function ModalAddFile({ show, hide, classe }) {
         /**/
         let data = new FormData();
         data.append('title', title);
-        data.append('blobitem', item.base64);
+        //data.append('blobitem', item.base64);
         data.append('linkitem', item.file);
         data.append('class', classe);
         data.append('details', details);
@@ -871,6 +838,7 @@ const styles = {
     zoom: {
         transform: 'scale(1.1)',
         transition: 'transform .2s', /* Animation */
-        cursor: 'pointer'
+        cursor: 'pointer',
+        height: '310px'
     }
 }
