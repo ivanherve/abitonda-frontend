@@ -53,7 +53,8 @@ export function Students() {
                     setStatus(true);
                 }
                 else
-                    swal('Erreur!', r.response, 'warning')
+                    //swal('Erreur!', r.response, 'warning')
+                    console.log(r.response)
             })
     }
 
@@ -142,8 +143,20 @@ export function Students() {
     if (loading) return <LoadingComponent img={require('../img/Cube-1s-104px.svg')} />
     if (!status) {
         return (
-            <EmptyList
-                msg="Vous n'avez aucun élève" />
+            <div>
+                {
+                    user.Profil_Id > 2
+                    &&
+                    <Button
+                        variant="outline-success"
+                        style={{ width: '100%', marginBottom: '10px' }}
+                        onClick={() => swal('Allez sur l\'onglet "Parents" \n Créez un parent \n Et ajoutez-y un élève')}
+                    >
+                        Ajouter un élève
+                    </Button>
+                }
+                <EmptyList msg="Vous n'avez aucun élève" />
+            </div>
         )
     }
     else
@@ -158,7 +171,7 @@ export function Students() {
                         onClick={() => swal('Allez sur l\'onglet "Parents" \n Créez un parent \n Et ajoutez-y un élève')}
                     >
                         Ajouter un élève
-                </Button>
+                    </Button>
                 }
                 <Row>
                     <Col xs='2'>

@@ -185,7 +185,7 @@ export function Teachers() {
                     style={{ width: '100%', marginBottom: '10px' }}
                     onClick={() => setshowAddTeacher(true)}
                 >
-                    Ajouter un professeur
+                    Ajouter un employée / enseignant
                 </Button>
             }
             <Row>

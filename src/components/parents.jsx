@@ -244,8 +244,30 @@ export function Parents() {
 
     if (!status) {
         return (
-            <EmptyList
-                msg="Vous n'avez aucun parent d'inscrit" />
+            <div>
+                {
+                    user.Profil_Id > 2
+                    &&
+                    <Button
+                        variant="outline-success"
+                        style={{ width: '100%', marginBottom: '10px' }}
+                        onClick={() => setshowAddParent(true)}
+                    >
+                        Ajouter un parent
+                    </Button>
+                }
+                <EmptyList msg="Vous n'avez aucun parent d'inscrit" />
+                <AddParent
+                    show={showAddParent}
+                    hide={() => setshowAddParent(false)}
+                    setFirstname={e => setaddParentFirstname(e.target.value)}
+                    setSurname={e => setaddParentSurname(e.target.value)}
+                    setEmail={e => setaddParentEmail(e.target.value)}
+                    setPassword={e => setaddParentPassword(e.target.value)}
+                    setConfPassword={e => setaddParentConfPassword(e.target.value === addParentPassword)}
+                    addParent={() => addParent()}
+                />
+            </div>
         )
     }
 
