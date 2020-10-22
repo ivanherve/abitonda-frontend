@@ -2,11 +2,11 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 import { faEdit } from '@fortawesome/free-regular-svg-icons';
 import { faArrowUp, faPlus, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import StickyBox from "react-sticky-box";
 import React, { useEffect, useState } from 'react';
 import { Badge, Button, Card, Col, Form, ListGroup, Modal, Nav, OverlayTrigger, Row, Tab, Tooltip } from 'react-bootstrap';
+import StickyBox from "react-sticky-box";
 import swal from 'sweetalert';
-import { apiUrl, getRequest, Idx, loadingTime, postAuthRequest } from '../links/links';
+import { apiUrl, EmptyList, getRequest, Idx, loadingTime, postAuthRequest } from '../links/links';
 import { LoadingComponent } from './LoadingComponent';
 
 library.add(
@@ -14,7 +14,40 @@ library.add(
     faTimes,
     faEdit,
     faArrowUp,
-)
+);
+
+export const banStudent = s => {
+    let data = new FormData();
+    data.append('student_id', s.Student_Id);
+    let token = JSON.parse(sessionStorage.getItem('userData')).token.api_token;
+    let header = postAuthRequest(token, data);
+    swal('Etes-vous sûr de vouloir bannir cet élève ?').then((confirmed) => {
+        if (confirmed)
+            fetch(`${apiUrl}banstudent`, header)
+                .then(r => r.json())
+                .then(r => {
+                    if (r.status) swal('Parfait!', r.response, 'success').then(() => window.location.reload())
+                    else swal('Erreur!', r.response, 'warning');
+                })
+    })
+
+}
+
+export const resetStudent = s => {
+    let data = new FormData();
+    data.append('student_id', s.Student_Id);
+    let token = JSON.parse(sessionStorage.getItem('userData')).token.api_token;
+    let header = postAuthRequest(token, data);
+    swal('Etes-vous sûr de vouloir réintégrer cet élève ?').then(confirmed => {
+        if (confirmed)
+            fetch(`${apiUrl}resetstudent`, header)
+                .then(r => r.json())
+                .then(r => {
+                    if (r.status) swal('Parfait!', r.response, 'success').then(() => window.location.reload())
+                    else swal('Erreur!', r.response, 'warning');
+                })
+    })
+}
 
 export function Parents() {
     const [parents, setparents] = useState([]);
@@ -26,6 +59,7 @@ export function Parents() {
     const [showEditParent, setshowEditParent] = useState(false);
     const [loading, setloading] = useState(1);
     const [oneParent, setoneParent] = useState('');
+    const [status, setStatus] = useState(false);
 
     const [showAddParent, setshowAddParent] = useState(false);
     const [addParentFirstname, setaddParentFirstname] = useState('');
@@ -108,26 +142,28 @@ export function Parents() {
     const banParent = () => {
         let data = new FormData();
         data.append('parent_id', oneParent.Parent_Id);
-        swal('Etes-vous sûr de vouloir bannir ce parent ?').then(() => {
-            fetch(`${apiUrl}banparent`, postAuthRequest(JSON.parse(sessionStorage.getItem('userData')).token.api_token, data))
-                .then(r => r.json())
-                .then(r => {
-                    if (r.status) swal('Parfait!', r.response, 'success').then(() => window.location.reload());
-                    else swal('Erreur!', r.response, 'warning');
-                })
+        swal('Etes-vous sûr de vouloir bannir ce parent ?').then(confirmed => {
+            if (confirmed)
+                fetch(`${apiUrl}banparent`, postAuthRequest(JSON.parse(sessionStorage.getItem('userData')).token.api_token, data))
+                    .then(r => r.json())
+                    .then(r => {
+                        if (r.status) swal('Parfait!', r.response, 'success').then(() => window.location.reload());
+                        else swal('Erreur!', r.response, 'warning');
+                    })
         })
     }
 
     const resetParent = () => {
         let data = new FormData();
         data.append('parent_id', oneParent.Parent_Id);
-        swal('Etes-vous sûr de vouloir réintégrer ce parent ?').then(() => {
-            fetch(`${apiUrl}resetparent`, postAuthRequest(JSON.parse(sessionStorage.getItem('userData')).token.api_token, data))
-                .then(r => r.json())
-                .then(r => {
-                    if (r.status) swal('Parfait!', r.response, 'success').then(() => window.location.reload());
-                    else swal('Erreur!', r.response, 'warning');
-                })
+        swal('Etes-vous sûr de vouloir réintégrer ce parent ?').then(confirmed => {
+            if (confirmed)
+                fetch(`${apiUrl}resetparent`, postAuthRequest(JSON.parse(sessionStorage.getItem('userData')).token.api_token, data))
+                    .then(r => r.json())
+                    .then(r => {
+                        if (r.status) swal('Parfait!', r.response, 'success').then(() => window.location.reload());
+                        else swal('Erreur!', r.response, 'warning');
+                    })
         })
     }
 
@@ -170,7 +206,8 @@ export function Parents() {
                     setemail(firstElement.EmailAddress);
                     setprofil(firstElement.Profil);
                     getStudents(firstElement.Parent_Id);
-                    setoneParent(firstElement)
+                    setoneParent(firstElement);
+                    setStatus(true)
                 }
                 else
                     console.log(r.response)
@@ -193,37 +230,6 @@ export function Parents() {
             })
     }
 
-    const banStudent = s => {
-        let data = new FormData();
-        data.append('student_id', s.Student_Id);
-        let token = JSON.parse(sessionStorage.getItem('userData')).token.api_token;
-        let header = postAuthRequest(token, data);
-        swal('Etes-vous sûr de vouloir bannir cet élève ?').then(() => {
-            fetch(`${apiUrl}banstudent`, header)
-                .then(r => r.json())
-                .then(r => {
-                    if (r.status) swal('Parfait!', r.response, 'success').then(() => window.location.reload())
-                    else swal('Erreur!', r.response, 'warning');
-                })
-        })
-
-    }
-
-    const resetStudent = s => {
-        let data = new FormData();
-        data.append('student_id', s.Student_Id);
-        let token = JSON.parse(sessionStorage.getItem('userData')).token.api_token;
-        let header = postAuthRequest(token, data);
-        swal('Etes-vous sûr de vouloir réintégrer cet élève ?').then(() => {
-            fetch(`${apiUrl}resetstudent`, header)
-                .then(r => r.json())
-                .then(r => {
-                    if (r.status) swal('Parfait!', r.response, 'success').then(() => window.location.reload())
-                    else swal('Erreur!', r.response, 'warning');
-                })
-        })
-    }
-
     useEffect(() => {
         if (parents.length < 1) getParents();
         if (classes.length < 1) getClasses();
@@ -234,7 +240,14 @@ export function Parents() {
         setloading(0);
     }, loadingTime);
 
-    if (loading) return <LoadingComponent />
+    if (loading) return <LoadingComponent img={require('../img/Spinner-1s-98px.svg')} />
+
+    if (!status) {
+        return (
+            <EmptyList
+                msg="Vous n'avez aucun parent d'inscrit" />
+        )
+    }
 
     return (
         <div>
@@ -251,7 +264,7 @@ export function Parents() {
             }
             <Row>
                 <Col xs='2'>
-                    <ListGroup>
+                    <ListGroup style={{ marginBottom: '100px' }}>
                         {
                             parents.map(p =>
                                 <ListGroup.Item
