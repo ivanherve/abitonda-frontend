@@ -9,7 +9,7 @@ export function EditClass(props) {
     const [theTeacher, settheTeacher] = useState('');
     const [disabled, setdisabled] = useState(false);
     const classe = props.classe;
-    console.log(classe);
+    //console.log(classe);
 
     const getTeachers = () => {
         fetch(`${apiUrl}getteachers`, getRequest(JSON.parse(sessionStorage.getItem('userData')).token.api_token))

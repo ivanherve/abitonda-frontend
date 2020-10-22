@@ -1,8 +1,9 @@
 import React from 'react';
 
-export function LoadingComponent() {
+export function LoadingComponent(props) {
     return (
         <div style={styles}>
+            <img src={props.img} style={{ height: props.height }} />
             Chargement...
         </div>
     )
