@@ -54,18 +54,22 @@ export default function Header() {
                         (
                             JSON.parse(sessionStorage.getItem('userData')).user.Parent_Id !== null
                             &&
-                            <Nav.Link href={`/parent/${JSON.parse(sessionStorage.getItem('userData')).user.User_Id}`}>Profil-Parent</Nav.Link>
+                            <Nav.Link href={`/parent/${JSON.parse(sessionStorage.getItem('userData')).user.User_Id}`}>
+                                Profil-Parent
+                            </Nav.Link>
                         )
                     }
                     {
                         JSON.parse(sessionStorage.getItem('userData')).user.Profil_Id > 2
                             ?
-                            <Nav.Link href="/teachers">Professeurs</Nav.Link>
+                            <Nav.Link href="/employees">Employées</Nav.Link>
                             :
                             (
                                 JSON.parse(sessionStorage.getItem('userData')).user.Professor_Id !== null
                                 &&
-                                <Nav.Link href={`/teacher/${JSON.parse(sessionStorage.getItem('userData')).user.User_Id}`}>Profil-Enseignants</Nav.Link>
+                                <Nav.Link href={`/teacher/${JSON.parse(sessionStorage.getItem('userData')).user.User_Id}`}>
+                                    Profil-Enseignants
+                                </Nav.Link>
                             )
                     }
                     {

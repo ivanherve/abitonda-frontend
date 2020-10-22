@@ -55,7 +55,7 @@ export default function Layout() {
                         {
                             JSON.parse(sessionStorage.getItem('userData')).user.Profil_Id > 2
                                 ?
-                                <Route path='/teachers' component={Teachers} />
+                                <Route path='/employees' component={Teachers} />
                                 :
                                 (
                                     JSON.parse(sessionStorage.getItem('userData')).user.Professor_Id !== null
