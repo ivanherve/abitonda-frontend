@@ -1,18 +1,20 @@
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faEdit } from '@fortawesome/free-regular-svg-icons';
-import { faArrowUp, faExclamationTriangle, faList, faTh, faTimes } from '@fortawesome/free-solid-svg-icons';
+import { faArrowDown, faArrowUp, faExclamationTriangle, faList, faTh, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import StickyBox from "react-sticky-box";
+import Axios from 'axios';
+import fileDownload from 'js-file-download';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
-import { Alert, Button, ButtonGroup, Card, CardColumns, Col, Form, Image, ListGroup, Modal, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
+import { Alert, Button, ButtonGroup, Card, CardColumns, Col, Form, ListGroup, Modal, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
+import ReactDOM from "react-dom";
 import FileBase64 from 'react-file-base64';
-import { BrowserRouter, Redirect, Route } from 'react-router-dom';
+import StickyBox from "react-sticky-box";
 import swal from 'sweetalert';
+import backgroundImg from '../img/Shrug-Emoji.jpg';
 import { apiUrl, getRequest, Idx, loadingTime, postAuthRequest, variantElement } from '../links/links';
 import { ModalAddClassTeacher } from './AddClassTeacher';
 import { EditClass } from './EditClass';
-import backgroundImg from '../img/Shrug-Emoji.jpg';
 import { LoadingComponent } from './LoadingComponent';
 
 library.add(
@@ -21,6 +23,7 @@ library.add(
     faExclamationTriangle,
     faTimes,
     faEdit,
+    faArrowDown,
     faArrowUp
 )
 
@@ -79,6 +82,7 @@ export function Classe() {
     const [showAddClassTeacher, setshowAddClassTeacher] = useState(false);
     const [showEditClass, setshowEditClass] = useState(false);
     const [loading, setloading] = useState(1);
+    const [oldpassword, setoldpassword] = useState('');
 
     const user = JSON.parse(sessionStorage.getItem('userData')).user;
 
@@ -166,25 +170,97 @@ export function Classe() {
             })
     }
 
+    const archiveDocuments = () => {
+        const token = JSON.parse(sessionStorage.getItem('userData')).token.api_token;
+
+        const data = new FormData();
+        data.append('userId', JSON.parse(sessionStorage.getItem('userData')).user.User_Id);
+
+        let input = <input type='password' onChange={e => { setoldpassword(e.target.value); swal.setActionValue(e.target.value) }} />
+        let wrapper = document.createElement('div');
+        ReactDOM.render(input, wrapper);
+        let el = wrapper.firstChild;
+
+        const params = {
+            text: 'Veuillez d\'abord entrer votre mot de passe',
+            content: el,
+            buttons: {
+                //text: 'Vérifier',
+                confirm: {
+                    /*
+                     * We need to initialize the value of the button to
+                     * an empty string instead of "true":
+                     */
+                    value: 'dd',
+                },
+            }
+        }
+
+        const text = "En archivant les documents vous télécharger un fichier .zip contenant tous les documents importés depuis le dernier archivage. \n\n En plus de ça vous supprimez définitivement aussi tous ces documents du serveur et cette action est irréversible. \n\n Êtes-vous sûr de vouloir poursuivre ?";
+
+        swal(params).then((value) => {
+            data.append('oldpassword', value);
+            fetch(`${apiUrl}checkpwd`, postAuthRequest(token, data))
+                .then(r => r.json())
+                .then(r => {
+                    if (r.status) {
+                        swal('Attention', text, 'warning').then((confirmed) => {
+                            if (confirmed) {
+                                swal('Parfait!', 'L\'archivage va commencer, veuillez ne pas fermer la page car l\'opération peut prendre un certains temps. \n\n Merci!', 'success').then(() => {
+                                    Axios.get(`${apiUrl}archivefiles`, {
+                                        responseType: 'blob',
+                                        ...getRequest(token),
+                                    })
+                                        .then(r => {
+                                            let filename = r.headers["content-disposition"].substring(Idx(r.headers["content-disposition"], "=") + 1, r.headers["content-disposition"].length);
+                                            /**/
+                                            fileDownload(r.data, filename);
+                                            fetch(`${apiUrl}delarchives`, getRequest(token))
+                                                .then(r => r.json())
+                                                .then(r => window.location.reload());
+
+                                        })
+                                })
+                            }
+                        })
+                    } else {
+                        swal('Erreur!', r.response, 'warning');
+                        //console.log([value, oldpassword, i])
+                    }
+                })
+        })
+    }
+
     setTimeout(() => {
         setloading(0);
     }, loadingTime);
-    if (loading) return <LoadingComponent />
+    if (loading) return <LoadingComponent img={require('../img/Bean Eater-1s-98px.svg')} />
     if (status) {
         return (
             <div style={{ height: '100%' }}>
                 {
                     user.Profil_Id > 2
-                        ?
-                        <Button
-                            variant="outline-success"
-                            style={{ width: '100%', marginBottom: '10px' }}
-                            onClick={() => setshowAddClassTeacher(true)}
-                        >
-                            Ajouter une classe
+                    &&
+                    <Row>
+                        <Col>
+                            <Button
+                                variant="outline-success"
+                                style={{ width: '100%', marginBottom: '10px' }}
+                                onClick={() => setshowAddClassTeacher(true)}
+                            >
+                                Ajouter une classe
                         </Button>
-                        :
-                        null
+                        </Col>
+                        <Col>
+                            <Button
+                                variant="outline-secondary"
+                                style={{ width: '100%', marginBottom: '10px' }}
+                                onClick={() => archiveDocuments()}
+                            >
+                                <FontAwesomeIcon icon={['fas', 'arrow-down']} /> Archiver les documents
+                        </Button>
+                        </Col>
+                    </Row>
                 }
                 <Row style={{ height: '100%' }}>
                     <Col xs='2'>
@@ -318,6 +394,8 @@ export function Classe() {
                                                                     setoneItem(i);
                                                                 }}
                                                                 date={i.updated_at}
+                                                                nbDownloads={i.Downloads}
+                                                                isTeacher={JSON.parse(sessionStorage.getItem('userData')).user.Professor_Id || (JSON.parse(sessionStorage.getItem('userData')).user.Profil_Id > 2)}
                                                             />
                                                         )
                                                         :
@@ -377,6 +455,7 @@ export function Classe() {
                         toEdit={toEdit}
                         setEdit={() => settoEdit(!toEdit)}
                         isParent={JSON.parse(sessionStorage.getItem('userData')).user.Parent_Id}
+                        isTeacher={JSON.parse(sessionStorage.getItem('userData')).user.Professor_Id}
                         isAdmin={JSON.parse(sessionStorage.getItem('userData')).user.Profil_Id > 2}
                     />
                     <ModalAddFile
@@ -424,7 +503,7 @@ export function CardItem({ title, details, click, imgSrc, date }) {
     return (
         <Card
             onClick={click}
-            style={hovered ? styles.zoom : { height: '310px' }}
+            style={hovered ? styles.zoom : { height: '330px' }}
             onMouseOver={() => sethovered(true)}
             onMouseOut={() => sethovered(false)}
         >
@@ -437,13 +516,15 @@ export function CardItem({ title, details, click, imgSrc, date }) {
                 </Card.Text>
             </Card.Body>
             <Card.Footer>
-                <small className="text-muted">{moment(date).format('Do MMMM YYYY, HH:mm')}</small>
+                <small className="text-muted">
+                    {moment(date).format('Do MMMM YYYY, HH:mm')}
+                </small>
             </Card.Footer>
         </Card>
     )
 }
 
-export function ListItem({ title, details, click, disabled = false, date, hasElement = true }) {
+export function ListItem({ title, details, click, disabled = false, date, hasElement = true, nbDownloads, isTeacher = false }) {
     return (
         <ListGroup.Item
             action
@@ -456,6 +537,13 @@ export function ListItem({ title, details, click, disabled = false, date, hasEle
                     <p style={{ fontStyle: 'italic', fontSize: '0.75em' }}>
                         {details}
                     </p>
+                    {
+                        isTeacher
+                        &&
+                        <p style={{ fontStyle: 'italic', fontSize: '0.75em' }}>
+                            Téléchargement: {nbDownloads}
+                        </p>
+                    }
                 </Col>
                 <Col>
                     {
@@ -485,19 +573,21 @@ export function ModalFile(props) {
     const [link, setlink] = useState('');
     const [blob, setblob] = useState('');
 
-    console.log(props);
+    //console.log(props);
 
     const downloadItem = (itemId) => {
         let userId = JSON.parse(sessionStorage.getItem('userData')).user.User_Id;
-        fetch(`${apiUrl}download/${itemId}/${userId}`, getRequest(JSON.parse(sessionStorage.getItem('userData')).token.api_token))
-            .then(r => window.open(r.url))
+        let getR = getRequest(JSON.parse(sessionStorage.getItem('userData')).token.api_token);
+        let url = `${apiUrl}download/${itemId}/${userId}`;
+        Axios.get(url, { ...getR, responseType: 'blob' })
             .then(r => {
-                if (!r.status)
-                    swal('Erreur!', r.response, 'warning');
-                else
-                    window.open(r)
+                let filename = r.headers["content-disposition"];
+                let startIdx = Idx(r.headers["content-disposition"], '="') + 2;
+                filename = filename.substring(startIdx, r.headers["content-disposition"].length - 1);
+                /**/
+                fileDownload(r.data, filename);
+                //console.log([r, filename])
             })
-            .catch(e => console.log(e))
     }
 
     const editItem = (itemId) => {
@@ -610,7 +700,7 @@ export function ModalFile(props) {
                 }
             </Modal.Body>
             {
-                props.isAdmin
+                (props.isAdmin || props.isTeacher)
                 &&
                 <Modal.Footer>
                     {
