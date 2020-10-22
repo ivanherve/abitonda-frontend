@@ -1,7 +1,9 @@
 import backgroundImg from '../img/Shrug-Emoji.jpg';
 import React from 'react';
 
-const domain = 'localhost:8000/';
+const domain = 'localhost:8082/';
+//const domain = '146.59.196.124:8082/';
+//const domain = 'localhost:8000/';
 
 export let apiUrl = `http://${domain}`;
 
