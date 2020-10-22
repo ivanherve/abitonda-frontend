@@ -2,10 +2,10 @@ import { library } from '@fortawesome/fontawesome-svg-core';
 import { faArrowUp, faEdit, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import React, { useEffect, useState } from 'react';
-import StickyBox from "react-sticky-box";
 import { Alert, Button, Card, Col, Form, ListGroup, Modal, Nav, OverlayTrigger, Row, Tab, Tooltip } from 'react-bootstrap';
+import StickyBox from "react-sticky-box";
 import swal from 'sweetalert';
-import { apiUrl, getRequest, Idx, loadingTime, postAuthRequest } from '../links/links';
+import { apiUrl, EmptyList, getRequest, Idx, loadingTime, postAuthRequest } from '../links/links';
 import { LoadingComponent } from './LoadingComponent';
 
 library.add(
@@ -35,6 +35,7 @@ export function Teachers() {
     const [pwdNotCorrect, setpwdNotCorrect] = useState(true);
 
     const [loading, setloading] = useState(1);
+    const [status, setStatus] = useState(false);
 
     const [key, setKey] = useState('editteacher');
 
@@ -48,6 +49,7 @@ export function Teachers() {
         data.append('password', password);
         data.append('confpwd', confpassword);
         let request = postAuthRequest(JSON.parse(sessionStorage.getItem('userData')).token.api_token, data)
+
         fetch(`${apiUrl}editteacher`, request)
             .then(r => r.json())
             .then(r => {
@@ -89,7 +91,8 @@ export function Teachers() {
         data.append('userId', (JSON.parse(sessionStorage.getItem('userData')).user.Profil_Id < 3) ? JSON.parse(sessionStorage.getItem('userData')).user.User_Id : teacher.User_Id);
         data.append('oldpassword', oldpwd);
         data.append('newpassword', newpwd);
-        data.append('confpassword', confpassword);
+        data.append('confpassword', newpwd === confpassword);
+        /**/
         fetch(`${apiUrl}editpwd`, postAuthRequest(JSON.parse(sessionStorage.getItem('userData')).token.api_token, data))
             .then(r => r.json())
             .then(r => {
@@ -100,6 +103,8 @@ export function Teachers() {
                     'result': (pwdNotCorrect || JSON.parse(sessionStorage.getItem('userData')).user.Profil_Id < 3)
                 }))
             })
+
+        //console.log([oldpwd, newpwd, confpassword, newpwd === confpassword])
     }
 
     const getTeachers = () => {
@@ -110,8 +115,9 @@ export function Teachers() {
                     setteachers(r.response);
                     setoneTeacher(r.response[0]);
                     setteacherId(r.response[0].User_Id);
-                    console.log(r.response)
+                    setStatus(true)
                 }
+                console.log(r);
             });
     }
 
@@ -121,7 +127,8 @@ export function Teachers() {
             .then(r => {
                 if (r.status) {
                     setprofiles(r.response);
-                    setoneProfile(r.response[0].Profil)
+                    setoneProfile(r.response[0].Profil);
+                    setprofilEdit(r.response[0].Profil);
                 }
             })
     }
@@ -129,26 +136,28 @@ export function Teachers() {
     const banTeacher = teacher => {
         let data = new FormData();
         data.append('userId', teacher.User_Id);
-        swal('Etes-vous sûr de vouloir bannir cette utilisateur ?').then(() => {
-            fetch(`${apiUrl}banteacher`, postAuthRequest(JSON.parse(sessionStorage.getItem('userData')).token.api_token, data))
-                .then(r => r.json())
-                .then(r => {
-                    if (r.status) swal('Parfait!', r.response, 'success').then(() => window.location.reload())
-                    else swal('Erreur!', r.response, 'warning')
-                })
+        swal('Etes-vous sûr de vouloir bannir cette utilisateur ?').then(confirmed => {
+            if (confirmed)
+                fetch(`${apiUrl}banteacher`, postAuthRequest(JSON.parse(sessionStorage.getItem('userData')).token.api_token, data))
+                    .then(r => r.json())
+                    .then(r => {
+                        if (r.status) swal('Parfait!', r.response, 'success').then(() => window.location.reload())
+                        else swal('Erreur!', r.response, 'warning')
+                    })
         })
     }
 
     const reHireTeacher = teacher => {
         let data = new FormData();
         data.append('userId', teacher.User_Id);
-        swal('Etes-vous sûr de vouloir réintégrer cette utilisateur ?').then(() => {
-            fetch(`${apiUrl}rehireteacher`, postAuthRequest(JSON.parse(sessionStorage.getItem('userData')).token.api_token, data))
-                .then(r => r.json())
-                .then(r => {
-                    if (r.status) swal('Parfait!', r.response, 'success').then(() => window.location.reload())
-                    else swal('Erreur!', r.response, 'warning')
-                })
+        swal('Etes-vous sûr de vouloir réintégrer cette utilisateur ?').then(confirmed => {
+            if (confirmed)
+                fetch(`${apiUrl}rehireteacher`, postAuthRequest(JSON.parse(sessionStorage.getItem('userData')).token.api_token, data))
+                    .then(r => r.json())
+                    .then(r => {
+                        if (r.status) swal('Parfait!', r.response, 'success').then(() => window.location.reload())
+                        else swal('Erreur!', r.response, 'warning')
+                    })
         })
     }
 
@@ -164,7 +173,8 @@ export function Teachers() {
         setloading(0);
     }, loadingTime);
 
-    if (loading) return <LoadingComponent />
+    if (loading) return <LoadingComponent img={require('../img/WalkingMan.svg')} height='100px' />
+    if (!status) return <EmptyList msg="Vous n'avez aucun employé" />
     else return (
         <div>
             {
@@ -180,7 +190,7 @@ export function Teachers() {
             }
             <Row>
                 <Col xs="2">
-                    <ListGroup>
+                    <ListGroup style={{ marginBottom: '100px' }}>
                         {
                             teachers.map(t =>
                                 <ListGroup.Item
@@ -316,7 +326,7 @@ export function Teachers() {
                                                                 teacher={oneTeacher}
                                                                 setoldpwd={e => setoldpwd(e.target.value)}
                                                                 setnewpwd={e => setnewpwd(e.target.value)}
-                                                                setconfpassword={e => setconfpassword(newpwd === e.target.value)}
+                                                                setconfpassword={e => setconfpassword(e.target.value)}
                                                                 isPwdNotCorrect={pwdNotCorrect}
                                                                 checkPassword={() => checkPassword(oneTeacher)}
                                                                 editPassword={() => editPassword(oneTeacher)}
@@ -364,6 +374,15 @@ export function Teachers() {
                                             </Form.Label>
                                                 <Col sm="10">
                                                     <Form.Control plaintext readOnly placeholder={toEdit ? null : oneTeacher.EmailAddress} />
+                                                </Col>
+                                            </Form.Group>
+
+                                            <Form.Group as={Row} controlId="formPlaintextProfil">
+                                                <Form.Label column sm="2">
+                                                    Profile
+                                                </Form.Label>
+                                                <Col sm="10">
+                                                    <Form.Control plaintext readOnly placeholder={toEdit ? null : oneTeacher.Profil} />
                                                 </Col>
                                             </Form.Group>
                                         </Form>
@@ -530,7 +549,7 @@ function EditTeacher(props) {
                     <Form.Group as={Row} controlId="formSurname">
                         <Form.Label column sm="2">
                             Nom de famille
-                                        </Form.Label>
+                        </Form.Label>
                         <Col sm="10">
                             <Form.Control placeholder={oneTeacher.Surname} onChange={props.setsurname} />
                         </Col>
