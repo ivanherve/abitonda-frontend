@@ -120,7 +120,10 @@ export function Parents() {
             .then(r => r.json())
             .then(r => {
                 if (r.status) swal('Parfait!', r.response, 'success').then(() => window.location.reload());
-                else swal('Erreur!', r.response, 'warning')
+                else {
+                    swal('Erreur!', r.response, 'warning');
+                    //console.log([addParentPassword, addParentConfPassword, addParentConfPassword === addParentPassword])
+                }
             })
     }
 
@@ -487,7 +490,7 @@ export function Parents() {
                                 setSurname={e => setaddParentSurname(e.target.value)}
                                 setEmail={e => setaddParentEmail(e.target.value)}
                                 setPassword={e => setaddParentPassword(e.target.value)}
-                                setConfPassword={e => setaddParentConfPassword(e.target.value === addParentPassword)}
+                                setConfPassword={e => setaddParentConfPassword(e.target.value)}
                                 addParent={() => addParent()}
                             />
                         </Card>

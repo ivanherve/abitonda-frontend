@@ -396,6 +396,7 @@ export function Classe() {
                                                                 date={i.updated_at}
                                                                 nbDownloads={i.Downloads}
                                                                 isTeacher={JSON.parse(sessionStorage.getItem('userData')).user.Professor_Id || (JSON.parse(sessionStorage.getItem('userData')).user.Profil_Id > 2)}
+                                                                hasNotUrl={Idx(i.Link, 'http') === -1}
                                                             />
                                                         )
                                                         :
@@ -524,7 +525,7 @@ export function CardItem({ title, details, click, imgSrc, date }) {
     )
 }
 
-export function ListItem({ title, details, click, disabled = false, date, hasElement = true, nbDownloads, isTeacher = false }) {
+export function ListItem({ title, details, click, disabled = false, date, hasElement = true, nbDownloads, isTeacher = false, hasNotUrl = false }) {
     return (
         <ListGroup.Item
             action
@@ -540,9 +541,13 @@ export function ListItem({ title, details, click, disabled = false, date, hasEle
                     {
                         isTeacher
                         &&
-                        <p style={{ fontStyle: 'italic', fontSize: '0.75em' }}>
-                            Téléchargement: {nbDownloads}
-                        </p>
+                        (
+                            hasNotUrl
+                            &&
+                            <p style={{ fontStyle: 'italic', fontSize: '0.75em' }}>
+                                Téléchargement: {nbDownloads}
+                            </p>
+                        )
                     }
                 </Col>
                 <Col>
