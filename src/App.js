@@ -17,12 +17,14 @@ moment().utcOffset(KigaliTimeZone);
 export default class App extends Component {
     render() {
         return (
-            <Router>
-                <Switch>
-                    <Route exact path="/login" name="Login Page" component={LoginPage} />
-                    <Route path="/" name="Accueil" render={({ location, history }) => <Layout location={location} history={history} />} />
-                </Switch>
-            </Router>            
+            <div>
+                <Router>
+                    <Switch>
+                        <Route exact path="/login" name="Login Page" component={LoginPage} />
+                        <Route path="/" name="Accueil" render={({ location, history }) => <Layout location={location} history={history} />} />
+                    </Switch>
+                </Router>
+            </div>
         )
     }
 }
