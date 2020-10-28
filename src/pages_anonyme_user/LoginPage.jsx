@@ -59,11 +59,11 @@ export default function LoginPage() {
                     <Card.Body>
                         <Form>
                             <Form.Group controlId="exampleForm.ControlInput1">
-                                <Form.Label>Email address</Form.Label>
-                                <Form.Control type="email" placeholder="name@example.com" onChange={e => setemail(e.target.value)} />
+                                <Form.Label>Adresse E-mail</Form.Label>
+                                <Form.Control type="email" placeholder="adresse@email.com" onChange={e => setemail(e.target.value)} />
                             </Form.Group>
                             <Form.Group controlId="exampleForm.ControlInput2">
-                                <Form.Label>Password</Form.Label>
+                                <Form.Label>Mot de passe</Form.Label>
                                 <Form.Control type="password" onChange={e => setpassword(e.target.value)} />
                             </Form.Group>
                         </Form>
