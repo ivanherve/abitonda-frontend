@@ -19,6 +19,7 @@ export function Teachers() {
     const [oneTeacher, setoneTeacher] = useState('');
     const [toEdit, settoEdit] = useState(false);
     const [classes, setclasses] = useState([]);
+    const [classNames, setClassNames] = useState([]);
     const [showAddTeacher, setshowAddTeacher] = useState(false);
     const [oneProfile, setoneProfile] = useState('');
     const [profiles, setprofiles] = useState([]);
@@ -115,7 +116,8 @@ export function Teachers() {
                     setteachers(r.response);
                     setoneTeacher(r.response[0]);
                     setteacherId(r.response[0].User_Id);
-                    setStatus(true)
+                    setStatus(true);
+                    getClasses(r.response[0].User_Id)
                 }
                 console.log(r);
             });
@@ -144,6 +146,18 @@ export function Teachers() {
                         if (r.status) swal('Parfait!', r.response, 'success').then(() => window.location.reload())
                         else swal('Erreur!', r.response, 'warning')
                     })
+        })
+    }
+
+    const getClasses = userId => {
+        let token = JSON.parse(sessionStorage.getItem('userData')).token.api_token;
+        fetch(`${apiUrl}getclasses/${userId}`, getRequest(token))
+        .then(r => r.json())
+        .then(r => {
+            if(r.status) {
+                setclasses(r.response);
+            }
+            console.log(r.response)
         })
     }
 
@@ -198,7 +212,8 @@ export function Teachers() {
                                     action
                                     onClick={() => {
                                         setoneTeacher(t);
-                                        setteacherId(t.User_Id)
+                                        setteacherId(t.User_Id);
+                                        getClasses(t.User_Id)
                                     }}
                                     variant={(JSON.parse(sessionStorage.getItem('userData')).user.Profil_Id > 2) && (t.Profil_Id > 1 ? 'success' : 'danger')}
                                 >
@@ -217,7 +232,7 @@ export function Teachers() {
                                     <Col xs="11">
                                         <Card.Title>{oneTeacher.Firstname} {oneTeacher.Surname}</Card.Title>
                                         <p>
-                                            {oneTeacher.Class || <div style={{ fontStyle: 'italic', fontSize: '0.75rem' }}>Pas de classe</div>}
+                                            {classes.join(", ") || <div style={{ fontStyle: 'italic', fontSize: '0.75rem' }}>Pas de classe</div>}
                                         </p>
                                     </Col>
                                     <Col xs="1">
@@ -364,7 +379,7 @@ export function Teachers() {
                                                     Classe
                                             </Form.Label>
                                                 <Col sm="10">
-                                                    <Form.Control plaintext readOnly placeholder={oneTeacher.Class || 'Pas de classe'} />
+                                                    <Form.Control plaintext readOnly placeholder={classes.join(", ") || 'Pas de classe'} />
                                                 </Col>
                                             </Form.Group>
 
