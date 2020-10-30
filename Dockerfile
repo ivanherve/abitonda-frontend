@@ -6,8 +6,6 @@ ENV PATH /usr/src/app/node_modules/.bin:$PATH
 COPY package.json /usr/src/app/package.json
 RUN npm install --silent
 RUN npm install react-scripts@1.1.1 -g --silent
-#RUN npm install -g babel-cli
-#RUN npm install babel-loader babel-preset-react
 COPY . /usr/src/app
 RUN npm run build
 
@@ -17,7 +15,7 @@ RUN rm -rf /etc/nginx/conf.d
 COPY conf /etc/nginx
 RUN mkdir /etc/nginx/ssl
 RUN chmod 700 /etc/nginx/ssl
-#COPY vmk_certification /etc/nginx/ssl
+COPY abitonda-certification /etc/nginx/ssl
 COPY --from=builder /usr/src/app/build /usr/share/nginx/html
 #EXPOSE 80
 #CMD ["nginx", "-g", "daemon off;"]
