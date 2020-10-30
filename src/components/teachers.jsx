@@ -359,7 +359,7 @@ export function Teachers() {
                                             <Form.Group as={Row} controlId="formFirstname">
                                                 <Form.Label column sm="2">
                                                     Prénom
-                                            </Form.Label>
+                                                </Form.Label>
                                                 <Col sm="10">
                                                     <Form.Control plaintext readOnly placeholder={oneTeacher.Firstname} />
                                                 </Col>
@@ -368,7 +368,7 @@ export function Teachers() {
                                             <Form.Group as={Row} controlId="formSurname">
                                                 <Form.Label column sm="2">
                                                     Nom de famille
-                                        </Form.Label>
+                                                </Form.Label>
                                                 <Col sm="10">
                                                     <Form.Control plaintext readOnly placeholder={oneTeacher.Surname} />
                                                 </Col>
@@ -377,7 +377,7 @@ export function Teachers() {
                                             <Form.Group as={Row} controlId="formClass">
                                                 <Form.Label column sm="2">
                                                     Classe
-                                            </Form.Label>
+                                                </Form.Label>
                                                 <Col sm="10">
                                                     <Form.Control plaintext readOnly placeholder={classes.join(", ") || 'Pas de classe'} />
                                                 </Col>
@@ -386,7 +386,7 @@ export function Teachers() {
                                             <Form.Group as={Row} controlId="formPlaintextEmail">
                                                 <Form.Label column sm="2">
                                                     Email
-                                            </Form.Label>
+                                                </Form.Label>
                                                 <Col sm="10">
                                                     <Form.Control plaintext readOnly placeholder={toEdit ? null : oneTeacher.EmailAddress} />
                                                 </Col>
