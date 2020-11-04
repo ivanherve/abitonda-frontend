@@ -440,7 +440,7 @@ function AddTeacher(props) {
             .then(r => r.json())
             .then(r => {
                 if (r.status) swal('Parfait!', r.response, 'success').then(() => window.location.reload());
-                else swal('Erreur', 'Un problème est survenu', 'warning')
+                else swal('Erreur', r.response, 'warning')
             })/*
         console.log({
             'Prénom': firstname,
