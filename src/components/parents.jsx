@@ -265,7 +265,7 @@ export function Parents() {
                     setSurname={e => setaddParentSurname(e.target.value)}
                     setEmail={e => setaddParentEmail(e.target.value)}
                     setPassword={e => setaddParentPassword(e.target.value)}
-                    setConfPassword={e => setaddParentConfPassword(e.target.value === addParentPassword)}
+                    setConfPassword={e => setaddParentConfPassword(e.target.value)}
                     addParent={() => addParent()}
                 />
             </div>
