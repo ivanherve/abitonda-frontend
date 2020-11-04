@@ -19,7 +19,6 @@ export function Teachers() {
     const [oneTeacher, setoneTeacher] = useState('');
     const [toEdit, settoEdit] = useState(false);
     const [classes, setclasses] = useState([]);
-    const [classNames, setClassNames] = useState([]);
     const [showAddTeacher, setshowAddTeacher] = useState(false);
     const [oneProfile, setoneProfile] = useState('');
     const [profiles, setprofiles] = useState([]);
@@ -29,7 +28,6 @@ export function Teachers() {
     const [surname, setsurname] = useState('');
     const [profilEdit, setprofilEdit] = useState('');
     const [email, setemail] = useState('');
-    const [password, setpassword] = useState('');
     const [oldpwd, setoldpwd] = useState('');
     const [newpwd, setnewpwd] = useState('');
     const [confpassword, setconfpassword] = useState(false);
@@ -38,8 +36,6 @@ export function Teachers() {
     const [loading, setloading] = useState(1);
     const [status, setStatus] = useState(false);
 
-    const [key, setKey] = useState('editteacher');
-
     const editTeacher = () => {
         let data = new FormData();
         data.append('userId', teacherId);
@@ -47,8 +43,6 @@ export function Teachers() {
         data.append('surname', surname);
         data.append('profil', profilEdit);
         data.append('email', email);
-        data.append('password', password);
-        data.append('confpwd', confpassword);
         let request = postAuthRequest(JSON.parse(sessionStorage.getItem('userData')).token.api_token, data)
 
         fetch(`${apiUrl}editteacher`, request)
@@ -78,7 +72,7 @@ export function Teachers() {
             .then(r => {
                 if (r.status) {
                     setpwdNotCorrect(false);
-                    console.log(r.response)
+                    //console.log(r.response)
                 } else {
                     swal('Erreur!', r.response, 'warning')
                 }
@@ -98,41 +92,17 @@ export function Teachers() {
             .then(r => r.json())
             .then(r => {
                 if (r.status) swal('Parfait!', r.response, 'success').then(() => window.location.reload());
-                else swal('Erreur!', r.response, 'warning').then(() => console.log(r, {
-                    'pwdNotCorrect': pwdNotCorrect,
-                    'profil': JSON.parse(sessionStorage.getItem('userData')).user.Profil_Id < 3,
-                    'result': (pwdNotCorrect || JSON.parse(sessionStorage.getItem('userData')).user.Profil_Id < 3)
-                }))
+                else swal('Erreur!', r.response, 'warning')
+                /*
+                    .then(() => console.log(r, {
+                        'pwdNotCorrect': pwdNotCorrect,
+                        'profil': JSON.parse(sessionStorage.getItem('userData')).user.Profil_Id < 3,
+                        'result': (pwdNotCorrect || JSON.parse(sessionStorage.getItem('userData')).user.Profil_Id < 3)
+                    }))
+                    */
             })
 
         //console.log([oldpwd, newpwd, confpassword, newpwd === confpassword])
-    }
-
-    const getTeachers = () => {
-        fetch(`${apiUrl}getteachers`, getRequest(JSON.parse(sessionStorage.getItem('userData')).token.api_token))
-            .then(r => r.json())
-            .then(r => {
-                if (r.status) {
-                    setteachers(r.response);
-                    setoneTeacher(r.response[0]);
-                    setteacherId(r.response[0].User_Id);
-                    setStatus(true);
-                    getClasses(r.response[0].User_Id)
-                }
-                console.log(r);
-            });
-    }
-
-    const getProfiles = () => {
-        fetch(`${apiUrl}getprofiles`, getRequest(JSON.parse(sessionStorage.getItem('userData')).token.api_token))
-            .then(r => r.json())
-            .then(r => {
-                if (r.status) {
-                    setprofiles(r.response);
-                    setoneProfile(r.response[0].Profil);
-                    setprofilEdit(r.response[0].Profil);
-                }
-            })
     }
 
     const banTeacher = teacher => {
@@ -152,13 +122,13 @@ export function Teachers() {
     const getClasses = userId => {
         let token = JSON.parse(sessionStorage.getItem('userData')).token.api_token;
         fetch(`${apiUrl}getclasses/${userId}`, getRequest(token))
-        .then(r => r.json())
-        .then(r => {
-            if(r.status) {
-                setclasses(r.response);
-            }
-            console.log(r.response)
-        })
+            .then(r => r.json())
+            .then(r => {
+                if (r.status) {
+                    setclasses(r.response);
+                }
+                //console.log(r.response)
+            })
     }
 
     const reHireTeacher = teacher => {
@@ -176,10 +146,35 @@ export function Teachers() {
     }
 
     useEffect(() => {
+        const getProfiles = () => {
+            fetch(`${apiUrl}getprofiles`, getRequest(JSON.parse(sessionStorage.getItem('userData')).token.api_token))
+                .then(r => r.json())
+                .then(r => {
+                    if (r.status) {
+                        setprofiles(r.response);
+                        setoneProfile(r.response[0].Profil);
+                        setprofilEdit(r.response[0].Profil);
+                    }
+                })
+        }
         if (profiles.length < 1) getProfiles();
     }, [profiles]);
 
     useEffect(() => {
+        const getTeachers = () => {
+            fetch(`${apiUrl}getteachers`, getRequest(JSON.parse(sessionStorage.getItem('userData')).token.api_token))
+                .then(r => r.json())
+                .then(r => {
+                    if (r.status) {
+                        setteachers(r.response);
+                        setoneTeacher(r.response[0]);
+                        setteacherId(r.response[0].User_Id);
+                        setStatus(true);
+                        getClasses(r.response[0].User_Id)
+                    }
+                    //console.log(r);
+                });
+        }
         if (teachers.length < 1) getTeachers();
     }, [teachers]);
 
@@ -252,7 +247,10 @@ export function Teachers() {
                                                                     delay={{ show: 250, hide: 400 }}
                                                                     overlay={<Tooltip>Modifier</Tooltip>}
                                                                 >
-                                                                    <Button variant="outline-info" style={{ width: '90%' }} onClick={() => { settoEdit(true); console.log(teachers) }}>
+                                                                    <Button variant="outline-info" style={{ width: '90%' }} onClick={() => {
+                                                                        settoEdit(true);
+                                                                        //console.log(teachers)
+                                                                    }}>
                                                                         <FontAwesomeIcon icon={["fas", 'edit']} />
                                                                     </Button>
                                                                 </OverlayTrigger>

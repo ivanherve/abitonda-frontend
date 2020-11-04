@@ -84,17 +84,6 @@ export function Parents() {
 
     const [classes, setclasses] = useState([]);
 
-    const getClasses = () => {
-        fetch(`${apiUrl}getclasses`, getRequest(JSON.parse(sessionStorage.getItem('userData')).token.api_token))
-            .then(r => r.json())
-            .then(r => {
-                if (r.status) {
-                    setclasses(r.response);
-                    setaddStudentClass(r.response[0].Class)
-                }
-                else console.log(r.response);
-            })
-    }
 
     const user = JSON.parse(sessionStorage.getItem('userData')).user;
 
@@ -176,7 +165,7 @@ export function Parents() {
             .then(r => r.json())
             .then(r => {
                 if (r.status) seteditParentPwdNotCorrect(false);
-                else console.log(r)
+                //else console.log(r)
             })
     }
 
@@ -196,25 +185,6 @@ export function Parents() {
             })
     }
 
-    const getParents = () => {
-        fetch(`${apiUrl}getparents`, getRequest(JSON.parse(sessionStorage.getItem('userData')).token.api_token))
-            .then(r => r.json())
-            .then(r => {
-                if (r.status) {
-                    let firstElement = r.response[0];
-                    setparents(r.response);
-                    setname(firstElement.Firstname + ' ' + firstElement.Surname);
-                    setemail(firstElement.EmailAddress);
-                    setprofil(firstElement.Profil);
-                    getStudents(firstElement.Parent_Id);
-                    setoneParent(firstElement);
-                    setStatus(true)
-                }
-                else
-                    console.log(r.response)
-            });
-    }
-
     const editInfo = () => {
         let data = new FormData();
         data.append('user_Id', oneParent.User_Id);
@@ -232,6 +202,36 @@ export function Parents() {
     }
 
     useEffect(() => {
+        const getParents = () => {
+            fetch(`${apiUrl}getparents`, getRequest(JSON.parse(sessionStorage.getItem('userData')).token.api_token))
+                .then(r => r.json())
+                .then(r => {
+                    if (r.status) {
+                        let firstElement = r.response[0];
+                        setparents(r.response);
+                        setname(firstElement.Firstname + ' ' + firstElement.Surname);
+                        setemail(firstElement.EmailAddress);
+                        setprofil(firstElement.Profil);
+                        getStudents(firstElement.Parent_Id);
+                        setoneParent(firstElement);
+                        setStatus(true)
+                    }
+                    //else console.log(r.response)
+                });
+        }
+
+        const getClasses = () => {
+            fetch(`${apiUrl}getclasses`, getRequest(JSON.parse(sessionStorage.getItem('userData')).token.api_token))
+                .then(r => r.json())
+                .then(r => {
+                    if (r.status) {
+                        setclasses(r.response);
+                        setaddStudentClass(r.response[0].Class)
+                    }
+                    //else console.log(r.response);
+                })
+        }
+        
         if (parents.length < 1) getParents();
         if (classes.length < 1) getClasses();
         if (JSON.parse(sessionStorage.getItem('userData')).user.Profil_Id > 2) seteditParentPwdNotCorrect(false);

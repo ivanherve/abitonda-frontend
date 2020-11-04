@@ -11,16 +11,6 @@ export function EditClass(props) {
     const classe = props.classe;
     //console.log(classe);
 
-    const getTeachers = () => {
-        fetch(`${apiUrl}getteachers`, getRequest(JSON.parse(sessionStorage.getItem('userData')).token.api_token))
-            .then(r => r.json())
-            .then(r => {
-                if (r.status) {
-                    setteachers(r.response);
-                }
-                console.log(r)
-            })
-    }
 
     const findTeacher = (e) => {
         let nameArray = e.split(' ');
@@ -29,15 +19,16 @@ export function EditClass(props) {
             if (n !== nameArray[0]) {
                 surnameArray.push(n);
             }
-
+            return surnameArray;
         })
         let theSurname = surnameArray.join(" ");
         //console.log(surnameArray);
         /**/
         teachers.map(t => {
             if (t.Firstname === nameArray[0]) {
-                if (t.Surname === theSurname) settheTeacher(t.Professor_Id);
+                if (t.Surname === theSurname) return t.Professor_Id;
             }
+            return -1;
         })
     }
 
@@ -49,20 +40,53 @@ export function EditClass(props) {
         fetch(`${apiUrl}editclass`, postAuthRequest(JSON.parse(sessionStorage.getItem('userData')).token.api_token, data))
             .then(r => r.json())
             .then(r => {
-                if(r.status) swal('Parfait!', r.response, 'success').then(() => window.location.reload());
+                if (r.status) swal('Parfait!', r.response, 'success').then(() => window.location.reload());
                 else swal('Erreur!', r.response, 'warning')
             })
     }
 
     useEffect(() => {
+        const findTeacher = (e) => {
+            let nameArray = e.split(' ');
+            let surnameArray = [];
+            nameArray.map(n => {
+                if (n !== nameArray[0]) {
+                    surnameArray.push(n);
+                }
+                return surnameArray;
+            })
+            let theSurname = surnameArray.join(" ");
+            //console.log(surnameArray);
+            /**/
+            teachers.map(t => {
+                if (t.Firstname === nameArray[0]) {
+                    if (t.Surname === theSurname) return t.Professor_Id;
+                }
+                return -1;
+            })
+        }
+        const getTeachers = () => {
+            fetch(`${apiUrl}getteachers`, getRequest(JSON.parse(sessionStorage.getItem('userData')).token.api_token))
+                .then(r => r.json())
+                .then(r => {
+                    if (r.status) {
+                        setteachers(r.response);
+                    }
+                    //console.log(r)
+                })
+        }
+
         if (teachers.length < 1) getTeachers();
         if (classname !== classe.Class) {
             setclassname(classe.Class);
             setdisabled(classe.Disabled);
         }
-        if (theTeacher.length < 1) findTeacher(classe.Teacher);
+        if (theTeacher) {
+            if (theTeacher.length < 1) settheTeacher(findTeacher(classe.Teacher));
+        }
+        
         //console.log(classe.Class, classname)
-    }, [teachers, classname]);
+    }, [teachers, classname, classe, theTeacher]);
 
     return (
         <Modal
@@ -90,7 +114,7 @@ export function EditClass(props) {
                             Professeur
                         </Form.Label>
                         <Col sm="10">
-                            <Form.Control as="select" defaultValue={classe.Teacher} onChange={e => findTeacher(e.target.value)}>
+                            <Form.Control as="select" defaultValue={classe.Teacher} onChange={e => settheTeacher(findTeacher(e.target.value))}>
                                 {
                                     teachers.map(t =>
                                         <option

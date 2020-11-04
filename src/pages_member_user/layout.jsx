@@ -4,7 +4,6 @@ import Switch from 'react-bootstrap/esm/Switch';
 import { Redirect, Route } from 'react-router-dom';
 import { Classe } from '../components/classes';
 import { Parents } from '../components/parents';
-import { Statistic } from '../components/statistic';
 import { Students } from '../components/students';
 import { Teachers } from '../components/teachers';
 import Header from './header';
@@ -18,7 +17,7 @@ export default function Layout() {
         ]
         if (i === colors.length) i = 0;
         setvariantColor(colors[i + 1]);
-        console.log(colors[i++])
+        //console.log(colors[i++])
     }
 
     if (!sessionStorage.getItem('userData')) {

@@ -56,7 +56,7 @@ export default function SideBar({ location, history }) {
                 onSelect={(selected) => {
                     // Add your code here
                     //window.location.replace(`/${selected}`);
-                    console.log(location.pathname.substr(1,location.pathname.length-1));
+                    //console.log(location.pathname.substr(1,location.pathname.length-1));
                     //return <Redirect to={`/${selected}`} />
                     var to = `/${selected}`;
                     if (location.pathname !== to) {

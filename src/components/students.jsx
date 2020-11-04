@@ -1,7 +1,6 @@
 import { library } from '@fortawesome/fontawesome-svg-core';
 import { faEdit, faTimes } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 import { Button, Card, CardColumns, Col, Form, ListGroup, Modal, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 import StickyBox from "react-sticky-box";
@@ -25,7 +24,6 @@ export function Students() {
     const [classes, setclasses] = useState([]);
 
     const [img, setimg] = useState('');
-    const [ItemId, setItemId] = useState('');
     const [oneItem, setoneItem] = useState('');
     const [showModal, setshowModal] = useState(false);
     const [toEdit, settoEdit] = useState(false);
@@ -39,43 +37,15 @@ export function Students() {
     const [editStudentBirthDate, seteditStudentBirthDate] = useState('');
     const [editStudentParent, seteditStudentParent] = useState('');
     const [editStudentClass, setEditStudentClass] = useState('');
-    const [isList, setisList] = useState(true);
+    const [isList] = useState(true);
 
-    const getStudents = () => {
-        fetch(`${apiUrl}getstudents`, getRequest(JSON.parse(sessionStorage.getItem('userData')).token.api_token))
-            .then(r => r.json())
-            .then(r => {
-                if (r.status) {
-                    setstudents(r.response);
-                    setoneStudent(r.response[0]);
-                    console.log(r.response);
-                    getItems(r.response[0].class);
-                    setStatus(true);
-                }
-                else
-                    //swal('Erreur!', r.response, 'warning')
-                    console.log(r.response)
-            })
-    }
-
-    const getClasses = () => {
-        fetch(`${apiUrl}getclasses`, getRequest(JSON.parse(sessionStorage.getItem('userData')).token.api_token))
-            .then(r => r.json())
-            .then(r => {
-                if (r.status) {
-                    setclasses(r.response);
-                    setStatusClasse(true);
-                }
-                else swal('Erreur!', r.response, 'warning');
-            })
-    }
 
     const getItems = (classe) => {
         fetch(`${apiUrl}getitem/${classe}`, getRequest(JSON.parse(sessionStorage.getItem('userData')).token.api_token))
             .then(r => r.json())
             .then(r => {
                 if (r.status) setitems(Object.values(r.response));
-                console.log(Object.values(r.response))
+                //console.log(Object.values(r.response))
             })
     }
 
@@ -98,43 +68,76 @@ export function Students() {
     }
 
     const findParent = e => {
-        if (parents.length < 1) console.log(0);
+        if (parents.length < 1) console.log();
         else {
             parents.map(p => {
                 let name = p.Firstname + ' ' + p.Surname;
-                if (name === e.target.value) seteditStudentParent(p.Parent_Id)
+                if (name === e.target.value) return (p.Parent_Id)
+                return -1;
             })
         }
     }
 
     const findClass = e => {
-        if (classes.length < 1) console.log(0);
+        if (classes.length < 1) console.log();
         else {
             classes.map(c => {
-                if (c.Class === e.target.value) setEditStudentClass(c.Class_Id)
+                if (c.Class === e.target.value) return c.Class_Id
+                return -1;
             })
         }
     }
 
     useEffect(() => {
+
+        const getParents = () => {
+            fetch(`${apiUrl}getparents`, getRequest(JSON.parse(sessionStorage.getItem('userData')).token.api_token))
+                .then(r => r.json())
+                .then(r => {
+                    if (r.status) {
+                        setparents(r.response);
+                        setStatusParent(true)
+                    }
+                    //else console.log(r.response)
+                })
+        }
+        const getStudents = () => {
+            fetch(`${apiUrl}getstudents`, getRequest(JSON.parse(sessionStorage.getItem('userData')).token.api_token))
+                .then(r => r.json())
+                .then(r => {
+                    if (r.status) {
+                        setstudents(r.response);
+                        setoneStudent(r.response[0]);
+                        //console.log(r.response);
+                        getItems(r.response[0].class);
+                        setStatus(true);
+                    }
+                    /*
+                    else
+                        //swal('Erreur!', r.response, 'warning')
+                        //console.log(r.response)
+                        */
+                })
+        }
+
+        const getClasses = () => {
+            fetch(`${apiUrl}getclasses`, getRequest(JSON.parse(sessionStorage.getItem('userData')).token.api_token))
+                .then(r => r.json())
+                .then(r => {
+                    if (r.status) {
+                        setclasses(r.response);
+                        setStatusClasse(true);
+                    }
+                    else swal('Erreur!', r.response, 'warning');
+                })
+        }
+
         if (students.length < 1) getStudents();
         if (parents.length < 1 && statusParent) getParents();
         if (classes.length < 1 && statusClasse) getClasses();
-    }, [students, parents, classes])
+    }, [students, parents, classes, items, statusClasse, statusParent])
 
     const user = JSON.parse(sessionStorage.getItem('userData')).user;
-
-    const getParents = () => {
-        fetch(`${apiUrl}getparents`, getRequest(JSON.parse(sessionStorage.getItem('userData')).token.api_token))
-            .then(r => r.json())
-            .then(r => {
-                if (r.status) {
-                    setparents(r.response);
-                    setStatusParent(true)
-                }
-                else console.log(r.response)
-            })
-    }
 
     setTimeout(() => {
         setloading(0);
@@ -181,7 +184,11 @@ export function Students() {
                                     <ListGroup.Item
                                         key={Idx(students, s)}
                                         action
-                                        onClick={() => { setoneStudent(s); getItems(s.class); console.log(s) }}
+                                        onClick={() => {
+                                            setoneStudent(s);
+                                            getItems(s.class);
+                                            //console.log(s) 
+                                        }}
                                         variant={JSON.parse(sessionStorage.getItem('userData')).user.Profil_Id > 2 && (s.disabled ? 'danger' : 'success')}
                                     >
                                         {s.Student}
@@ -290,7 +297,7 @@ export function Students() {
                                                             click={() => {
                                                                 setshowModal(true);
                                                                 setimg(i.File);
-                                                                setItemId(i.Item_Id);
+                                                                //setItemId(i.Item_Id);
                                                                 setoneItem(i);
                                                             }}
                                                             date={i.updated_at}
@@ -309,7 +316,7 @@ export function Students() {
                                                                     click={() => {
                                                                         setshowModal(true);
                                                                         setimg(i.File);
-                                                                        setItemId(i.Item_Id);
+                                                                        //setItemId(i.Item_Id);
                                                                         setoneItem(i);
                                                                     }}
                                                                     date={i.updated_at}
@@ -345,52 +352,12 @@ export function Students() {
                         setFirstname={e => seteditStudentFirstname(e.target.value)}
                         setSurname={e => seteditStudentSurname(e.target.value)}
                         setBirthDate={e => seteditStudentBirthDate(e.target.value)}
-                        setParent={e => findParent(e)}
-                        setClass={e => findClass(e)}
+                        setParent={e => seteditStudentParent(findParent(e))}
+                        setClass={e => setEditStudentClass(findClass(e))}
                     />
                 </Row>
             </div>
         )
-}
-
-function AddStudent(props) {
-    return (
-        <Modal show={props.show} onHide={props.hide}>
-            <Modal.Header>
-                <Modal.Title>Ajouter un élève</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-                <Form>
-                    <Form.Group as={Row} controlId="formPlaintextFirstname">
-                        <Form.Label column sm="2">
-                            Prénom
-                        </Form.Label>
-                        <Col sm="10">
-                            <Form.Control />
-                        </Col>
-                    </Form.Group>
-
-                    <Form.Group as={Row} controlId="formPlaintextSurname">
-                        <Form.Label column sm="2">
-                            Nom
-                        </Form.Label>
-                        <Col sm="10">
-                            <Form.Control />
-                        </Col>
-                    </Form.Group>
-
-                    <Form.Group as={Row} controlId="formPlaintextFirstname">
-                        <Form.Label column sm="2">
-                            Classe
-                        </Form.Label>
-                        <Col sm="10">
-                            <Form.Control />
-                        </Col>
-                    </Form.Group>
-                </Form>
-            </Modal.Body>
-        </Modal>
-    )
 }
 
 function EditStudent(props) {

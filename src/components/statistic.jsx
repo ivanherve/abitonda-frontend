@@ -1,6 +1,6 @@
 import React from "react";
 import { Card } from "react-bootstrap";
-import { Bar, Doughnut, Line } from "react-chartjs-2";
+import { Line } from "react-chartjs-2";
 
 export function Statistic() {
     const data = {

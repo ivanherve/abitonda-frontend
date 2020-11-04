@@ -13,7 +13,7 @@ export default function LoginPage() {
         let data = new FormData();
         data.append('email', email);
         data.append('password', password);
-        console.log(email, password)
+        //console.log(email, password)
         fetch(`${apiUrl}signin`, {
             method: 'post',
             body: data
@@ -24,12 +24,12 @@ export default function LoginPage() {
                     setloggedin(true);
                 } else {
                     swal(r.response[0]);
-                    console.log(r.response)
+                    //console.log(r.response)
                 }
             }).catch(e => {
                 //alert(e);
-                console.log(e);
-                console.log(apiUrl)
+                //console.log(e);
+                //console.log(apiUrl)
             });
 
         //sessionStorage.setItem('userData', 'JSON.stringify(r.response)');
@@ -48,10 +48,10 @@ export default function LoginPage() {
     }
     return (
         <Container>
-            <div className="d-flex justify-content-center" style={{marginTop: '100px'}}>
+            <div className="d-flex justify-content-center" style={{ marginTop: '100px' }}>
                 <img src={require('../img/logo-removebg.png')} alt="Logo" width="199.5" height="225" />
             </div>
-            <div className="d-flex justify-content-center h-50">                
+            <div className="d-flex justify-content-center h-50">
                 <Card>
                     <Card.Header>
                         <Card.Title>Connexion</Card.Title>
@@ -60,16 +60,22 @@ export default function LoginPage() {
                         <Form>
                             <Form.Group controlId="exampleForm.ControlInput1">
                                 <Form.Label>Adresse E-mail</Form.Label>
-                                <Form.Control type="email" placeholder="adresse@email.com" onChange={e => setemail(e.target.value)} />
+                                <Form.Control type="email" placeholder="adresse@email.com" onChange={e => setemail(e.target.value)} onKeyUp={e => {
+                                    if(e.keyCode === 13) signIn(email, password)
+                                }} />
                             </Form.Group>
                             <Form.Group controlId="exampleForm.ControlInput2">
                                 <Form.Label>Mot de passe</Form.Label>
-                                <Form.Control type="password" onChange={e => setpassword(e.target.value)} />
+                                <Form.Control type="password" onChange={e => setpassword(e.target.value)} onKeyUp={e => {
+                                    if(e.keyCode === 13) signIn(email, password)
+                                }} />
                             </Form.Group>
                         </Form>
                     </Card.Body>
                     <Card.Footer>
-                        <Button variant="outline-warning" onClick={() => signIn(email, password)}>Connexion</Button>
+                        <Button variant="outline-warning" onClick={() => signIn(email, password)}>
+                            Connexion
+                        </Button>
                     </Card.Footer>
                 </Card>
             </div>

@@ -3,7 +3,7 @@ import React from 'react';
 export function LoadingComponent(props) {
     return (
         <div style={styles}>
-            <img src={props.img} style={{ height: props.height }} />
+            <img src={props.img} alt="Chargement" style={{ height: props.height }} />
             Chargement...
         </div>
     )

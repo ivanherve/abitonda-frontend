@@ -16,7 +16,9 @@ export default function Header() {
     const signOut = () => {
         fetch(`${apiUrl}signout`, getRequest(JSON.parse(sessionStorage.getItem('userData')).token.api_token))
             .then(r => r.json())
-            .then(r => console.log(r))
+            .then(r => {
+                //console.log(r)
+            })
         sessionStorage.setItem('userData', null);
         sessionStorage.clear();
         //console.log(loggedIn);

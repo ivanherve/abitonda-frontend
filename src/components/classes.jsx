@@ -42,7 +42,7 @@ export const delItem = (itemId) => {
                     .then(r => r.json())
                     .then(r => {
                         if (r.status) {
-                            console.log(r)
+                            //console.log(r)
                             swal('Supprimé', r.response, 'success')
                                 .then(() => window.location.reload());
                         }
@@ -82,13 +82,12 @@ export function Classe() {
     const [showAddClassTeacher, setshowAddClassTeacher] = useState(false);
     const [showEditClass, setshowEditClass] = useState(false);
     const [loading, setloading] = useState(1);
-    const [oldpassword, setoldpassword] = useState('');
 
     const user = JSON.parse(sessionStorage.getItem('userData')).user;
 
     useEffect(() => {
         moment().locale('fr')
-        console.log(moment().format('LLLL'))
+        //console.log(moment().format('LLLL'))
         if (classes.length < 1)
             //fetchClasses(classe);
             fetch(`${apiUrl}getclasses`, getRequest(JSON.parse(sessionStorage.getItem('userData')).token.api_token))
@@ -135,7 +134,7 @@ export function Classe() {
                     ]);
                     setimg('')
                 }
-                console.log(Object.values(r.response));
+                //console.log(Object.values(r.response));
                 //console.log(moment("2020-09-17T13:32:22.000000Z").format('Do MMMM YYYY, HH:mm'));
             })
     }
@@ -176,7 +175,13 @@ export function Classe() {
         const data = new FormData();
         data.append('userId', JSON.parse(sessionStorage.getItem('userData')).user.User_Id);
 
-        let input = <input type='password' onChange={e => { setoldpassword(e.target.value); swal.setActionValue(e.target.value) }} />
+        let input = <input
+            type='password'
+            onChange={e => {
+                //setoldpassword(e.target.value);
+                swal.setActionValue(e.target.value)
+            }}
+        />
         let wrapper = document.createElement('div');
         ReactDOM.render(input, wrapper);
         let el = wrapper.firstChild;
@@ -280,7 +285,7 @@ export function Classe() {
                                                     setoneClass(c);
                                                     setteachers(c.Teacher);
                                                     getItem(c.Class);
-                                                    console.log(c)
+                                                    //console.log(c)
                                                 }}
                                             >
                                                 {c.Class}
@@ -567,7 +572,7 @@ export function ListItem({ title, details, click, disabled = false, date, hasEle
 export function ModalFile(props) {
     const show = props.show;
     const hide = props.hide;
-    const imgSrc = props.imgSrc;
+    //const imgSrc = props.imgSrc;
     const del = props.del;
     const item = props.item || { Type: "" };
     const toEdit = props.toEdit;
@@ -576,7 +581,7 @@ export function ModalFile(props) {
     const [details, setdetails] = useState(null);
     const [linkItem, setlinkItem] = useState('');
     const [link, setlink] = useState('');
-    const [blob, setblob] = useState('');
+    //const [blob, setblob] = useState('');
 
     //console.log(props);
 
@@ -602,21 +607,21 @@ export function ModalFile(props) {
         data.append('details', details);
         data.append('linkitem', linkItem);
         data.append('link', link);
-        data.append('blob', blob);
+        //data.append('blob', blob);
         fetch(`${apiUrl}edititem`, postAuthRequest(JSON.parse(sessionStorage.getItem('userData')).token.api_token, data))
             .then(r => r.json())
             .then(r => {
                 if (r.status) {
-                    console.log(itemId)
+                    //console.log(itemId)
                     swal('Parfait!', r.response, 'success')
                         .then(() => window.location.reload())
                 }
                 else {
-                    console.log(r)
+                    //console.log(r)
                 }
 
             })
-        console.log(itemId)
+        //console.log(itemId)
     }
 
     return (
@@ -665,7 +670,7 @@ export function ModalFile(props) {
                                 <Form.Group>
                                     <Form.Label>
                                         Lien
-                                            </Form.Label>
+                                    </Form.Label>
                                     <Form.Control type="url" placeholder={item.Link} onChange={e => setlink(e.target.value)} />
                                 </Form.Group>
                                 :
@@ -679,8 +684,8 @@ export function ModalFile(props) {
                             <Form.Group>
                                 <Form.Label>
                                     Source
-                                    </Form.Label>
-                                <Form.Control type="file" onChange={() => console.log('ici')} />
+                                </Form.Label>
+                                <Form.Control type="file" onChange={(e) => setlinkItem(e.target.files[0])} />
                             </Form.Group>)
                 }
                 {
@@ -697,7 +702,7 @@ export function ModalFile(props) {
                             onClick={() => downloadItem(item.Item_Id)}
                         >
                             Télécharger le document
-                                </Button>
+                        </Button>
                         :
                         !toEdit
                         &&
@@ -716,14 +721,14 @@ export function ModalFile(props) {
                                 onClick={() => editItem(item.Item_Id, item.linkitem)}
                             >
                                 Enregistrer
-                        </Button>
+                            </Button>
                             :
                             <Button
                                 variant="outline-info"
                                 onClick={setEdit}
                             >
                                 Modifier
-                        </Button>
+                            </Button>
                     }
                     {
                         toEdit
@@ -846,7 +851,7 @@ function ModalAddFile({ show, hide, classe }) {
                 }
                 else
                     swal("Erreur", r.response, 'warning')
-                console.log([r.response, item.file])
+                //console.log([r.response, item.file])
             })
     }
 
@@ -884,7 +889,7 @@ function ModalAddFile({ show, hide, classe }) {
                                         ? setisVideo(true)
                                         : setisVideo(false);
                                     setitem(pic);
-                                    console.log(pic.base64.length, pic.type)
+                                    //console.log(pic.base64.length, pic.type)
                                 }}
                             />
                             {/*<Form.File onChange={e => console.log(e.target.files)} />*/}

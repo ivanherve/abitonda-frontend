@@ -12,7 +12,6 @@ export function ModalAddClassTeacher(props) {
     const [Email, setEmail] = useState('');
     const [password, setpassword] = useState('');
     const [confPassword, setconfPassword] = useState('');
-    const [profil, setProfil] = useState('');
     const [teacherId, setteacherId] = useState('');
     const [classe, setclasse] = useState('');
 
@@ -22,7 +21,6 @@ export function ModalAddClassTeacher(props) {
             .then(r => {
                 if (r.status) {
                     setprofiles(r.response);
-                    setProfil(r.response[0].Profil)
                 }
             })
     }
@@ -45,15 +43,16 @@ export function ModalAddClassTeacher(props) {
             if (n !== nameArray[0]) {
                 surnameArray.push(n);
             }
-
+            return surnameArray;
         })
         let theSurname = surnameArray.join(" ");
         //console.log(surnameArray);
         /**/
         teachers.map(t => {
             if (t.Firstname === nameArray[0]) {
-                if (t.Surname === theSurname) setteacherId(t.Professor_Id);
+                if (t.Surname === theSurname) return t.Professor_Id;
             }
+            return -1;
         })
     }
 
@@ -68,11 +67,11 @@ export function ModalAddClassTeacher(props) {
         data.append('confPassword', confPassword === password);
         data.append('isOld', isOld);
         fetch(`${apiUrl}addclass`, postAuthRequest(JSON.parse(sessionStorage.getItem('userData')).token.api_token, data))
-        .then(r => r.json())
-        .then(r => {
-            if(r.status) swal('Parfait!', r.response, 'success').then(() => window.location.reload())
-            else swal('Erreur!', r.response, 'warning');
-        })
+            .then(r => r.json())
+            .then(r => {
+                if (r.status) swal('Parfait!', r.response, 'success').then(() => window.location.reload())
+                else swal('Erreur!', r.response, 'warning');
+            })
     }
 
     useEffect(() => {
@@ -135,7 +134,7 @@ export function ModalAddClassTeacher(props) {
                                     Professeur
                                 </Form.Label>
                                 <Col sm="10">
-                                    <Form.Control as="select" onChange={e => findTeacher(e)}>
+                                    <Form.Control as="select" onChange={e => setteacherId(findTeacher(e))}>
                                         {
                                             teachers.map(t =>
                                                 <option key={Idx(teachers, t)}>
@@ -180,7 +179,10 @@ export function ModalAddClassTeacher(props) {
                                         Profile
                                     </Form.Label>
                                     <Col sm="10">
-                                        <Form.Control as="select" onChange={e => setProfil(e.target.value)} disabled>
+                                        <Form.Control
+                                            as="select"
+                                            disabled
+                                        >
                                             {
                                                 profiles.map(p =>
                                                     <option key={Idx(profiles, p)}>
