@@ -435,7 +435,7 @@ function AddTeacher(props) {
         data.append('email', email);
         data.append('password', password);
         data.append('confpassword', confPassword);
-        data.append('profil', theProfile.length < 1 && props.oneProfil);
+        data.append('profil', theProfile.length < 1 ? props.oneProfil : theProfile);
         fetch(`${apiUrl}addteacher`, postAuthRequest(JSON.parse(sessionStorage.getItem('userData')).token.api_token, data))
             .then(r => r.json())
             .then(r => {
