@@ -7,9 +7,9 @@ import React from 'react';
 const domain = 'homework.abitonda.rw:4433/';
 //const domain = 'localhost:8000/';
 
-export let apiUrl = `http://${domain}`;
+export let apiUrlLocal = `http://${domain}`;
 
-export let apiUrlLocal = `https://${domain}`;
+export let apiUrl = `https://${domain}`;
 
 /*
 export const checkUrl = (url) => {
