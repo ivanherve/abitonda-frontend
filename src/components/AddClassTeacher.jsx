@@ -47,13 +47,14 @@ export function ModalAddClassTeacher(props) {
         })
         let theSurname = surnameArray.join(" ");
         //console.log(surnameArray);
-        /**/
+        let tId = -1;
         teachers.map(t => {
             if (t.Firstname === nameArray[0]) {
-                if (t.Surname === theSurname) return t.Professor_Id;
+                if (t.Surname === theSurname) tId = t.Professor_Id;
             }
-            return -1;
+            return tId;
         })
+        return tId;
     }
 
     const addClass = () => {
@@ -70,7 +71,10 @@ export function ModalAddClassTeacher(props) {
             .then(r => r.json())
             .then(r => {
                 if (r.status) swal('Parfait!', r.response, 'success').then(() => window.location.reload())
-                else swal('Erreur!', r.response, 'warning');
+                else {
+                    swal('Erreur!', r.response, 'warning');
+                    console.log(teacherId)
+                }
             })
     }
 

@@ -15,6 +15,7 @@ export function EditClass(props) {
     const findTeacher = (e) => {
         let nameArray = e.split(' ');
         let surnameArray = [];
+        let tId = -1;
         nameArray.map(n => {
             if (n !== nameArray[0]) {
                 surnameArray.push(n);
@@ -26,10 +27,11 @@ export function EditClass(props) {
         /**/
         teachers.map(t => {
             if (t.Firstname === nameArray[0]) {
-                if (t.Surname === theSurname) return t.Professor_Id;
+                if (t.Surname === theSurname) tId = t.Professor_Id;
             }
-            return -1;
+            return tId;
         })
+        return tId;
     }
 
     const editClass = () => {
@@ -49,6 +51,7 @@ export function EditClass(props) {
         const findTeacher = (e) => {
             let nameArray = e.split(' ');
             let surnameArray = [];
+            let tId = -1;
             nameArray.map(n => {
                 if (n !== nameArray[0]) {
                     surnameArray.push(n);
@@ -60,11 +63,13 @@ export function EditClass(props) {
             /**/
             teachers.map(t => {
                 if (t.Firstname === nameArray[0]) {
-                    if (t.Surname === theSurname) return t.Professor_Id;
+                    if (t.Surname === theSurname) tId = t.Professor_Id;
                 }
-                return -1;
+                return tId;
             })
+            return tId;
         }
+        
         const getTeachers = () => {
             fetch(`${apiUrl}getteachers`, getRequest(JSON.parse(sessionStorage.getItem('userData')).token.api_token))
                 .then(r => r.json())

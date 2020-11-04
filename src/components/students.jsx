@@ -68,24 +68,28 @@ export function Students() {
     }
 
     const findParent = e => {
+        let pId = -1;
         if (parents.length < 1) console.log();
         else {
             parents.map(p => {
                 let name = p.Firstname + ' ' + p.Surname;
-                if (name === e.target.value) return (p.Parent_Id)
-                return -1;
+                if (name === e.target.value) pId = (p.Parent_Id)
+                return pId;
             })
         }
+        return pId;
     }
 
     const findClass = e => {
+        let cId = -1;
         if (classes.length < 1) console.log();
         else {
             classes.map(c => {
-                if (c.Class === e.target.value) return c.Class_Id
-                return -1;
+                if (c.Class === e.target.value) cId = c.Class_Id
+                return cId;
             })
         }
+        return cId;
     }
 
     useEffect(() => {
