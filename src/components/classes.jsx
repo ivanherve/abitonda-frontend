@@ -790,13 +790,13 @@ function ModalAddLink(props) {
             <Modal.Body>
                 <Form>
                     <Form.Group as={Row}>
-                        <Form.Label column sm="1">Titre</Form.Label>
+                        <Form.Label column sm="1">Titre*</Form.Label>
                         <Col sm="11">
                             <Form.Control placeholder="leçon TPS" onChange={e => settitle(e.target.value)} />
                         </Col>
                     </Form.Group>
                     <Form.Group as={Row}>
-                        <Form.Label column sm="1">Lien</Form.Label>
+                        <Form.Label column sm="1">Lien*</Form.Label>
                         <Col sm="11">
                             <Form.Control type="url" placeholder="https://drive.google.com/..." onChange={e => setlink(e.target.value)} />
                         </Col>
@@ -874,13 +874,13 @@ function ModalAddFile({ show, hide, classe }) {
             <Modal.Body>
                 <Form>
                     <Form.Group as={Row}>
-                        <Form.Label column sm="1">Titre</Form.Label>
+                        <Form.Label column sm="1">Titre*</Form.Label>
                         <Col sm="11">
                             <Form.Control placeholder="exercice TPS" onChange={e => settitle(e.target.value)} />
                         </Col>
                     </Form.Group>
                     <Form.Group as={Row}>
-                        <Form.Label column sm="1">Fichier</Form.Label>
+                        <Form.Label column sm="1">Fichier*</Form.Label>
                         <Col sm="11">
                             <FileBase64
                                 className='form-control-file'

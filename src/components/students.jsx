@@ -137,8 +137,8 @@ export function Students() {
         }
 
         if (students.length < 1) getStudents();
-        if (parents.length < 1 && statusParent) getParents();
-        if (classes.length < 1 && statusClasse) getClasses();
+        if (parents.length < 1) getParents();
+        if (classes.length < 1) getClasses();
     }, [students, parents, classes, items, statusClasse, statusParent])
 
     const user = JSON.parse(sessionStorage.getItem('userData')).user;

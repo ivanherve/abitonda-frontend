@@ -194,7 +194,7 @@ export function Teachers() {
                     style={{ width: '100%', marginBottom: '10px' }}
                     onClick={() => setshowAddTeacher(true)}
                 >
-                    Ajouter un employée / enseignant
+                    Ajouter un employé / enseignant
                 </Button>
             }
             <Row>
@@ -455,7 +455,7 @@ function AddTeacher(props) {
     return (
         <Modal show={props.show} onHide={props.hide} centered size='xl'>
             <Modal.Header>
-                <Modal.Title>Ajouter un professeur</Modal.Title>
+                <Modal.Title>Ajouter un employé / professeur</Modal.Title>
             </Modal.Header>
             <Modal.Body>
                 <Form>
