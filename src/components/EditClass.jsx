@@ -76,6 +76,7 @@ export function EditClass(props) {
                 .then(r => {
                     if (r.status) {
                         setteachers(r.response);
+                        settheTeacher(findTeacher(r.response[0].Firstname+' '+r.response[0].Surname))
                     }
                     //console.log(r)
                 })
