@@ -37,7 +37,7 @@ export function EditClass(props) {
     const editClass = () => {
         let data = new FormData();
         data.append('class', classe.Class);
-        data.append('teacherId', theTeacher);
+        data.append('teacherId', theTeacher ? theTeacher : findTeacher(classe.Teacher));
         data.append('active', disabled);
         fetch(`${apiUrl}editclass`, postAuthRequest(JSON.parse(sessionStorage.getItem('userData')).token.api_token, data))
             .then(r => r.json())
@@ -76,7 +76,7 @@ export function EditClass(props) {
                 .then(r => {
                     if (r.status) {
                         setteachers(r.response);
-                        settheTeacher(findTeacher(r.response[0].Firstname+' '+r.response[0].Surname))
+                        //settheTeacher(findTeacher(r.response[0].Firstname+' '+r.response[0].Surname))
                     }
                     //console.log(r)
                 })
