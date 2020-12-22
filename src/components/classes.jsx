@@ -401,7 +401,7 @@ export function Classe() {
                                                                 date={i.updated_at}
                                                                 nbDownloads={i.Downloads}
                                                                 isTeacher={JSON.parse(sessionStorage.getItem('userData')).user.Professor_Id || (JSON.parse(sessionStorage.getItem('userData')).user.Profil_Id > 2)}
-                                                                hasNotUrl={Idx(i.Link, 'http') === -1}
+                                                                hasNotUrl={i.Link ? Idx(i.Link, 'http') === -1 : true}
                                                             />
                                                         )
                                                         :
