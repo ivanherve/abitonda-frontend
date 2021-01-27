@@ -2,7 +2,7 @@ import React from 'react';
 
 export function LoadingComponent(props) {
     return (
-        <div style={styles}>
+        <div style={props.styles || styles}>
             <img src={props.img} alt="Chargement" style={{ height: '90px' }} />
             Chargement...
         </div>

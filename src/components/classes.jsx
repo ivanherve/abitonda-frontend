@@ -829,8 +829,10 @@ function ModalAddFile({ show, hide, classe }) {
     const [item, setitem] = useState([]);
     const [details, setdetails] = useState('');
     const [isVideo, setisVideo] = useState(false);
+    const [loading, setLoading] = useState(0);
 
     const sendFile = () => {
+        setLoading(true);
         /**/
         let data = new FormData();
         data.append('title', title);
@@ -855,64 +857,79 @@ function ModalAddFile({ show, hide, classe }) {
             })
     }
 
+    setTimeout(() => {
+        setLoading(0);
+    }, 100000);
+
     return (
         <Modal show={show} onHide={hide} centered size="xl">
             <Modal.Header>
                 <Modal.Title>Ajouter un fichier</Modal.Title>
             </Modal.Header>
             {
-                isVideo
+                loading
                     ?
-                    <Alert variant="danger">
-                        <FontAwesomeIcon icon={["fas", "exclamation-triangle"]} /> Les vidéos sont trop lourde!
-                        <br />
-                        Veuillez ajouter votre vidéo dans un drive et y ajouter le lien en cliquant sur "Ajouter un lien"
-                    </Alert>
+                    <LoadingComponent
+                        img={require('../img/Spinner-1s-98px.svg')}
+                        styles={styles.loadingComp}
+                    />
                     :
-                    null
-            }
-            <Modal.Body>
-                <Form>
-                    <Form.Group as={Row}>
-                        <Form.Label column sm="1">Titre*</Form.Label>
-                        <Col sm="11">
-                            <Form.Control placeholder="exercice TPS" onChange={e => settitle(e.target.value)} />
-                        </Col>
-                    </Form.Group>
-                    <Form.Group as={Row}>
-                        <Form.Label column sm="1">Fichier*</Form.Label>
-                        <Col sm="11">
-                            <FileBase64
-                                className='form-control-file'
-                                onDone={(pic) => {
-                                    pic.type.indexOf('video') !== -1 || pic.name.indexOf('.mp4') !== -1
-                                        ? setisVideo(true)
-                                        : setisVideo(false);
-                                    setitem(pic);
-                                    //console.log(pic.base64.length, pic.type)
-                                }}
-                            />
-                            {/*<Form.File onChange={e => console.log(e.target.files)} />*/}
-                        </Col>
-                    </Form.Group>
-                    {/**/}
-                    <Form.Group as={Row}>
-                        <Form.Label column sm="1">Classe</Form.Label>
-                        <Col sm="11">
-                            <Form.Control placeholder={classe} readOnly />
-                        </Col>
-                    </Form.Group>
+                    <div>
+                        {
+                            isVideo
+                                ?
+                                <Alert variant="danger">
+                                    <FontAwesomeIcon icon={["fas", "exclamation-triangle"]} /> Les vidéos sont trop lourde!
+                                    <br />
+                                    Veuillez ajouter votre vidéo dans un drive et y ajouter le lien en cliquant sur "Ajouter un lien"
+                                </Alert>
+                                :
+                                null
+                        }
+                        <Modal.Body>
+                            <Form>
+                                <Form.Group as={Row}>
+                                    <Form.Label column sm="1">Titre*</Form.Label>
+                                    <Col sm="11">
+                                        <Form.Control placeholder="exercice TPS" onChange={e => settitle(e.target.value)} />
+                                    </Col>
+                                </Form.Group>
+                                <Form.Group as={Row}>
+                                    <Form.Label column sm="1">Fichier*</Form.Label>
+                                    <Col sm="11">
+                                        <FileBase64
+                                            className='form-control-file'
+                                            onDone={(pic) => {
+                                                pic.type.indexOf('video') !== -1 || pic.name.indexOf('.mp4') !== -1
+                                                    ? setisVideo(true)
+                                                    : setisVideo(false);
+                                                setitem(pic);
+                                                //console.log(pic.base64.length, pic.type)
+                                            }}
+                                        />
+                                        {/*<Form.File onChange={e => console.log(e.target.files)} />*/}
+                                    </Col>
+                                </Form.Group>
+                                {/**/}
+                                <Form.Group as={Row}>
+                                    <Form.Label column sm="1">Classe</Form.Label>
+                                    <Col sm="11">
+                                        <Form.Control placeholder={classe} readOnly />
+                                    </Col>
+                                </Form.Group>
 
-                    <Form.Group as={Row}>
-                        <Form.Label column sm="1">Description</Form.Label>
-                        <Col sm="11">
-                            <Form.Control as="textarea" rows='3' onChange={e => setdetails(e.target.value)} />
-                        </Col>
-                    </Form.Group>
-                </Form>
-            </Modal.Body>
+                                <Form.Group as={Row}>
+                                    <Form.Label column sm="1">Description</Form.Label>
+                                    <Col sm="11">
+                                        <Form.Control as="textarea" rows='3' onChange={e => setdetails(e.target.value)} />
+                                    </Col>
+                                </Form.Group>
+                            </Form>
+                        </Modal.Body>
+                    </div>
+            }
             <Modal.Footer>
-                <Button variant='outline-warning' onClick={() => sendFile()}>Ajouter</Button>
+                <Button variant='outline-warning' onClick={() => sendFile()} disabled={loading}>Ajouter</Button>
             </Modal.Footer>
         </Modal>
     )
@@ -940,5 +957,13 @@ const styles = {
         transition: 'transform .2s', /* Animation */
         cursor: 'pointer',
         height: '310px'
+    },
+    loadingComp: {
+        display: 'flex',
+        justifyContent: 'center',
+        flexDirection: 'column',
+        fontSize: '2rem',
+        color: 'green',
+        textAlign: 'center'
     }
 }
