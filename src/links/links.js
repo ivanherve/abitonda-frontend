@@ -4,12 +4,13 @@ import React from 'react';
 //const domain = 'localhost:8082/';
 //const domain = '146.59.196.124:8082/';
 //const domain = '146.59.196.124:4433/';
-const domain = 'homework.abitonda.rw:4433/';
-//const domain = 'localhost:8000/';
+//const domain = 'homework.abitonda.rw:4433/';
+//const domain = 'localhost:8080/';
+const domain = '146.59.196.124:8083/';
 
 export let apiUrlLocal = `http://${domain}`;
 
-export let apiUrl = `https://${domain}`;
+export let apiUrl = `http://${domain}`;
 
 /*
 export const checkUrl = (url) => {
