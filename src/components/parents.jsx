@@ -231,7 +231,7 @@ export function Parents() {
                     //else console.log(r.response);
                 })
         }
-        
+
         if (parents.length < 1) getParents();
         if (classes.length < 1) getClasses();
         if (JSON.parse(sessionStorage.getItem('userData')).user.Profil_Id > 2) seteditParentPwdNotCorrect(false);
@@ -568,6 +568,10 @@ function AddStudent(props) {
 }
 
 function EditParent(props) {
+    const [loading, setLoading] = useState(0);
+    setTimeout(() => {
+        setLoading(0);
+    }, 25000);
     return (
         <Modal
             show={props.show}
@@ -599,25 +603,25 @@ function EditParent(props) {
                                             <Form.Label>
                                                 Prénom
                                             </Form.Label>
-                                            <Form.Control placeholder={props.parent.Firstname} onChange={props.setFirstname} />
+                                            <Form.Control disabled={loading} placeholder={props.parent.Firstname} onChange={props.setFirstname} />
                                         </Form.Group>
 
                                         <Form.Group controlId="formSurname">
                                             <Form.Label>
                                                 Nom
                                             </Form.Label>
-                                            <Form.Control placeholder={props.parent.Surname} onChange={props.setSurname} />
+                                            <Form.Control disabled={loading} placeholder={props.parent.Surname} onChange={props.setSurname} />
                                         </Form.Group>
                                         <Form.Group controlId="formEmail">
                                             <Form.Label>
                                                 Email
                                             </Form.Label>
-                                            <Form.Control placeholder={props.parent.EmailAddress} onChange={props.setEmail} />
+                                            <Form.Control disabled={loading} placeholder={props.parent.EmailAddress} onChange={props.setEmail} />
                                         </Form.Group>
                                     </Form>
                                     <Col md={{ span: 3, offset: 10 }}>
-                                        <Button style={{ width: '70%' }} variant="outline-warning" onClick={props.editInfo}>
-                                            Modifier
+                                        <Button style={{ width: '70%' }} disabled={loading} variant="outline-warning" onClick={() => { props.editInfo(); setLoading(1) }}>
+                                            {loading ? 'Chargement ...' : 'Modifier'}
                                         </Button>
                                     </Col>
                                 </Tab.Pane>
@@ -630,7 +634,7 @@ function EditParent(props) {
                                                 <Form.Label>
                                                     Ancien Mot de passe
                                                 </Form.Label>
-                                                <Form.Control type="password" placeholder="Password" onChange={props.setOldPwd} />
+                                                <Form.Control disabled={loading} type="password" placeholder="Password" onChange={props.setOldPwd} />
                                             </Form.Group>
                                         }
                                         <hr />
@@ -638,21 +642,21 @@ function EditParent(props) {
                                             <Form.Label>
                                                 Nouveau Mot de passe
                                             </Form.Label>
-                                            <Form.Control disabled={props.pwdNotCorrect} type="password" placeholder="Password" onChange={props.setNewPwd} />
+                                            <Form.Control disabled={props.pwdNotCorrect || loading} type="password" placeholder="Password" onChange={props.setNewPwd} />
                                         </Form.Group>
                                         <Form.Group controlId="formConfNewPassword">
                                             <Form.Label>
                                                 Vérification du mot de passe
                                             </Form.Label>
-                                            <Form.Control disabled={props.pwdNotCorrect} type="password" placeholder="Password" onChange={props.setConfPwd} />
+                                            <Form.Control disabled={props.pwdNotCorrect || loading} type="password" placeholder="Password" onChange={props.setConfPwd} />
                                         </Form.Group>
                                     </Form>
                                     <Col md={{ span: 3, offset: 9 }}>
                                         {
                                             props.isAdmin
                                                 ?
-                                                <Button style={{ width: '100%' }} variant="outline-warning" onClick={props.editPwd}>
-                                                    Modifier
+                                                <Button style={{ width: '100%' }} disabled={loading} variant="outline-warning" onClick={() => { props.editPwd(); setLoading(1) }}>
+                                                    {loading ? 'Chargement ...' : 'Modifier'}
                                                 </Button>
                                                 :
                                                 (
@@ -662,8 +666,8 @@ function EditParent(props) {
                                                             Vérifier mot de passe
                                                         </Button>
                                                         :
-                                                        <Button style={{ width: '100%' }} variant="outline-warning" onClick={props.editPwd}>
-                                                            Modifier
+                                                        <Button style={{ width: '100%' }} disabled={loading} variant="outline-warning" onClick={() => { props.editPwd(); setLoading(1) }}>
+                                                            {loading ? 'Chargement ...' : 'Modifier'}
                                                         </Button>
                                                 )
                                         }
@@ -681,6 +685,10 @@ function EditParent(props) {
 }
 
 function AddParent(props) {
+    const [loading, setLoading] = useState(0);
+    setTimeout(() => {
+        setLoading(0);
+    }, 25000);
     return (
         <Modal
             show={props.show}
@@ -698,7 +706,7 @@ function AddParent(props) {
                             Prénom
                         </Form.Label>
                         <Col sm="10">
-                            <Form.Control onChange={props.setFirstname} />
+                            <Form.Control disabled={loading} onChange={props.setFirstname} />
                         </Col>
                     </Form.Group>
 
@@ -707,7 +715,7 @@ function AddParent(props) {
                             Nom
                         </Form.Label>
                         <Col sm="10">
-                            <Form.Control onChange={props.setSurname} />
+                            <Form.Control disabled={loading} onChange={props.setSurname} />
                         </Col>
                     </Form.Group>
 
@@ -716,7 +724,7 @@ function AddParent(props) {
                             Email
                         </Form.Label>
                         <Col sm="10">
-                            <Form.Control type="email" onChange={props.setEmail} />
+                            <Form.Control disabled={loading} type="email" onChange={props.setEmail} />
                         </Col>
                     </Form.Group>
 
@@ -725,7 +733,7 @@ function AddParent(props) {
                             Mot de passe
                         </Form.Label>
                         <Col sm="10">
-                            <Form.Control type="password" onChange={props.setPassword} />
+                            <Form.Control disabled={loading} type="password" onChange={props.setPassword} />
                         </Col>
                     </Form.Group>
 
@@ -734,13 +742,15 @@ function AddParent(props) {
                             Confirmation de Mot de passe
                         </Form.Label>
                         <Col sm="10">
-                            <Form.Control type="password" onChange={props.setConfPassword} />
+                            <Form.Control disabled={loading} type="password" onChange={props.setConfPassword} />
                         </Col>
                     </Form.Group>
                 </Form>
             </Modal.Body>
             <Modal.Footer>
-                <Button variant="outline-warning" onClick={props.addParent}>Ajouter</Button>
+                <Button variant="outline-warning" disabled={loading} onClick={() => { props.addParent(); setLoading(1) }}>
+                    {loading ? 'Chargement ...' : 'Ajouter'}
+                </Button>
             </Modal.Footer>
         </Modal>
     )

@@ -397,6 +397,7 @@ export function Classe() {
                                                                     setimg(i.File);
                                                                     setItemId(i.Item_Id);
                                                                     setoneItem(i);
+                                                                    //console.log(i)
                                                                 }}
                                                                 date={i.updated_at}
                                                                 nbDownloads={i.Downloads}
@@ -581,11 +582,13 @@ export function ModalFile(props) {
     const [details, setdetails] = useState(null);
     const [linkItem, setlinkItem] = useState('');
     const [link, setlink] = useState('');
+    const [loading, setLoading] = useState(0);
     //const [blob, setblob] = useState('');
 
     //console.log(props);
 
     const downloadItem = (itemId) => {
+        setLoading(1);
         let userId = JSON.parse(sessionStorage.getItem('userData')).user.User_Id;
         let getR = getRequest(JSON.parse(sessionStorage.getItem('userData')).token.api_token);
         let url = `${apiUrl}download/${itemId}/${userId}`;
@@ -601,6 +604,7 @@ export function ModalFile(props) {
     }
 
     const editItem = (itemId) => {
+        setLoading(1);
         let data = new FormData();
         data.append('itemId', itemId);
         data.append('title', title);
@@ -623,6 +627,10 @@ export function ModalFile(props) {
             })
         //console.log(itemId)
     }
+
+    setTimeout(() => {
+        setLoading(0);
+    }, 50000);
 
     return (
         <Modal
@@ -700,8 +708,11 @@ export function ModalFile(props) {
                         <Button
                             variant="outline-secondary"
                             onClick={() => downloadItem(item.Item_Id)}
+                            disabled={loading}
                         >
-                            Télécharger le document
+                            {
+                                loading ? 'Chargement ...' : 'Télécharger le document'
+                            }
                         </Button>
                         :
                         !toEdit
@@ -719,8 +730,11 @@ export function ModalFile(props) {
                             <Button
                                 variant="outline-info"
                                 onClick={() => editItem(item.Item_Id, item.linkitem)}
+                                disabled={loading}
                             >
-                                Enregistrer
+                                {
+                                    loading ? 'Chargement ...' : 'Enregistrer'
+                                }
                             </Button>
                             :
                             <Button
@@ -736,6 +750,7 @@ export function ModalFile(props) {
                             <Button
                                 variant="outline-danger"
                                 onClick={setEdit}
+                                disabled={loading}
                             >
                                 Annuler
                             </Button>
