@@ -75,11 +75,11 @@ export default function Header() {
                             )
                     }
                     {
-                        /*
+                        /**/
                         JSON.parse(sessionStorage.getItem('userData')).user.Profil_Id > 2
                         &&
                         <Nav.Link href='/statistics'>Tableau de bord</Nav.Link>
-                        */
+                        
                     }
                 </Nav>
                 <Nav>

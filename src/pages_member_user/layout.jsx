@@ -6,6 +6,7 @@ import { Classe } from '../components/classes';
 import { Parents } from '../components/parents';
 import { Students } from '../components/students';
 import { Teachers } from '../components/teachers';
+import { Statistic } from '../components/statistic';
 import Header from './header';
 
 let i = 0;
@@ -68,11 +69,11 @@ export default function Layout() {
                             <Route path='/students' component={Students} />
                         }
                         {
-                            /*
+                            /**/
                             JSON.parse(sessionStorage.getItem('userData')).user.Profil_Id > 2
                             &&
                             <Route path='/statistics' component={Statistic} />
-                            */
+                            
                         }
                         {
                             window.location.pathname === "/"
