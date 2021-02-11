@@ -51,6 +51,7 @@ export const resetStudent = s => {
 
 export function Parents() {
     const [parents, setparents] = useState([]);
+    const [listParent, setListParent] = useState([]);
     const [name, setname] = useState('');
     const [email, setemail] = useState('');
     const [profil, setprofil] = useState('');
@@ -201,6 +202,18 @@ export function Parents() {
             })
     }
 
+    const searchParent = e => {
+        let search = e.target.value;
+        //console.log(search)
+        if (parents.length > 0) {
+            setListParent(parents.filter(el => {
+                let name = el.Firstname + ' ' + el.Surname;
+                name = name.toUpperCase();
+                return name.indexOf(search.toUpperCase()) !== -1;
+            }))
+        }
+    }
+
     useEffect(() => {
         const getParents = () => {
             fetch(`${apiUrl}getparents`, getRequest(JSON.parse(sessionStorage.getItem('userData')).token.api_token))
@@ -209,6 +222,7 @@ export function Parents() {
                     if (r.status) {
                         let firstElement = r.response[0];
                         setparents(r.response);
+                        setListParent(r.response);
                         setname(firstElement.Firstname + ' ' + firstElement.Surname);
                         setemail(firstElement.EmailAddress);
                         setprofil(firstElement.Profil);
@@ -277,19 +291,29 @@ export function Parents() {
             {
                 user.Profil_Id > 2
                 &&
-                <Button
-                    variant="outline-success"
-                    style={{ width: '100%', marginBottom: '10px' }}
-                    onClick={() => setshowAddParent(true)}
-                >
-                    Ajouter un parent
-                </Button>
+                <Row>
+                    <Col xs='5'>
+                        <Form.Control placeholder='Rechercher un parent ...' onChange={e => searchParent(e)} />
+                    </Col>
+                    <Col xs='4'>
+                        <Form.Control placeholder='Rechercher un enfant ...' />
+                    </Col>
+                    <Col xs='3'>
+                        <Button
+                            variant="outline-success"
+                            style={{ width: '100%', marginBottom: '10px' }}
+                            onClick={() => setshowAddParent(true)}
+                        >
+                            Ajouter un parent
+                        </Button>
+                    </Col>
+                </Row>
             }
             <Row>
                 <Col xs='2'>
                     <ListGroup style={{ marginBottom: '100px' }}>
                         {
-                            parents.map(p =>
+                            listParent.map(p =>
                                 <ListGroup.Item
                                     key={Idx(parents, p)}
                                     variant={JSON.parse(sessionStorage.getItem('userData')).user.Profil_Id > 2 && (p.Profil_Id > 1 ? 'success' : 'danger')}
@@ -302,7 +326,7 @@ export function Parents() {
                                         setoneParent(p);
                                     }}
                                 >
-                                    {p.Firstname} {p.Surname}
+                                    <strong>{p.Surname}</strong> <i style={{ fontSize: '0.75em' }}>{p.Firstname}</i>
                                 </ListGroup.Item>
                             )
                         }
