@@ -7,8 +7,10 @@ import { getRequest, apiUrl } from "../links/links";
 export function Statistic() {
     const [users, setUsers] = useState([]);
     const [nbToken, setNbToken] = useState([0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]);
+    const [nbActualTokens, setNbActualTokens] = useState([]);
     let tabUsers = [];
     let tabTokens = [];
+    let tabActualTokens = [];
     const getLogins = () => {
         fetch(`${apiUrl}getlogins`, getRequest(JSON.parse(sessionStorage.getItem('userData')).token.api_token))
             .then(r => r.json())
@@ -21,24 +23,35 @@ export function Statistic() {
                             //else setUsers([...users, u.Name]);
                             tabUsers.push(u.Name);
                             tabTokens.push(u.NbToken);
+                            tabActualTokens.push(u.Connecte);
                         })
                     }
                 }
                 setUsers(tabUsers);
                 setNbToken(tabTokens);
+                setNbActualTokens(tabActualTokens);
             });
     }
     const data = {
         labels: users,
         datasets: [
             {
-                label: "My First dataset",
+                label: "Nombre de connexion depuis création",
                 backgroundColor: "rgba(255,99,132,0.2)",
                 borderColor: "rgba(255,99,132,1)",
                 borderWidth: 1,
                 hoverBackgroundColor: "rgba(255,99,132,0.4)",
                 hoverBorderColor: "rgba(255,99,132,1)",
                 data: nbToken,
+            },
+            {
+                label: "Connecté",
+                backgroundColor: "rgba(77, 255, 77, 0.2)",
+                borderColor: "rgba(0, 179, 0, 1)",
+                borderWidth: 1,
+                hoverBackgroundColor: "rgba(255,99,200,0.4)",
+                hoverBorderColor: "rgba(255,99,200,1)",
+                data: nbActualTokens,
             },
         ],
     };
