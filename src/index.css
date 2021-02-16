@@ -4,7 +4,7 @@ html, body, #root {
     height: 100%;
     min-width: 750px;
     font-family: 'Numans', sans-serif;
-    background-color: rgb(230, 255, 8);
+    background-color: cornsilk;
 }
 
 .container {
