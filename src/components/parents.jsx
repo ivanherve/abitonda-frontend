@@ -291,6 +291,7 @@ export function Parents() {
             {
                 user.Profil_Id > 2
                 &&
+                /*
                 <Row>
                     <Col xs='5'>
                         <Form.Control placeholder='Rechercher un parent ...' onChange={e => searchParent(e)} />
@@ -308,6 +309,14 @@ export function Parents() {
                         </Button>
                     </Col>
                 </Row>
+                */
+                <Button
+                    variant="outline-success"
+                    style={{ width: '100%', marginBottom: '10px' }}
+                    onClick={() => setshowAddParent(true)}
+                >
+                    Ajouter un parent
+                </Button>
             }
             <Row>
                 <Col xs='2'>
